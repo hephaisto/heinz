@@ -1,0 +1,53 @@
+env=Environment()
+
+debug=ARGUMENTS.get("debug",0)
+if int(debug):
+	env.Append(CCFLAGS="-g")
+raspi=ARGUMENTS.get("raspi",0)
+
+if int(raspi):
+	env.Append(CCFLAGS="-Ofast -mfpu=vfp -mfloat-abi=hard -march=armv6zk -mtune=arm1176jzf-s")
+else:
+	env.Append(CPPPATH = ['/home/hephaisto/external/wiringPi/'])
+
+env.Append(CCFLAGS="-std=c++11")
+env.Append(CCFLAGS="-DBOOST_ALL_DYN_LINK")
+
+libs=[
+"boost_system",
+"boost_thread",
+"boost_filesystem",
+"boost_log",
+"boost_log_setup",
+"pthread",
+"wt",
+"wthttp",
+"boost_signals"
+]
+
+sources_daemon=[
+"constants.cpp",
+"Endpoint.cpp",
+"ScalarEndpoint.cpp",
+"HardwareEndpoint.cpp",
+"FakeEndpoint.cpp",
+"exceptions.cpp",
+"heinzd.cpp",
+"EndpointListWidget.cpp",
+"WebApp.cpp",
+"EndpointSliderWidget.cpp",
+"EndpointWidget.cpp",
+"EndpointOnOffButtonWidget.cpp",
+"config/config_loader.cpp",
+"MultiplexerEndpoint.cpp"
+]
+
+sources_raspi=[
+"backends/raspi.cpp"
+]
+
+configfile=env.Command("config/heinz.conf","../config/heinz.conf",Copy("$TARGET", "$SOURCE"))
+
+heinzd=env.Program(target="heinzd",source=sources_daemon+sources_raspi,LIBS=libs)
+
+Default(heinzd,configfile)
