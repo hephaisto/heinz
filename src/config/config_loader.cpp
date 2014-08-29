@@ -13,7 +13,10 @@
 
 #include "../FakeEndpoint.hpp"
 #include "../MultiplexerEndpoint.hpp"
+
+#ifdef HAS_WIRINGPI
 #include "../backends/raspi.hpp"
+#endif
 
 namespace heinz
 {
@@ -57,7 +60,11 @@ Config load_config(const string &filename)
 			// raspi
 			else if(type=="raspi")
 			{
+				#ifdef HAS_WIRINGPI
 				ptr=make_shared<EndpointRaspberry>(v.second);
+				#else
+				throw HeinzException("This version has been built without support for wiringPi!");
+				#endif
 			}
 			// no matching endpoint type found
 			else

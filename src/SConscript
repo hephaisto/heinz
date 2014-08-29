@@ -1,14 +1,22 @@
 env=Environment()
+conf=Configure(env)
+
 
 debug=ARGUMENTS.get("debug",0)
 if int(debug):
 	env.Append(CCFLAGS="-g")
-raspi=ARGUMENTS.get("raspi",0)
 
-if int(raspi):
-	env.Append(CCFLAGS="-Ofast -mfpu=vfp -mfloat-abi=hard -march=armv6zk -mtune=arm1176jzf-s")
+
+raspi=ARGUMENTS.get("raspi",0)
+if conf.CheckCHeader("wiringPi.h"):
+	wiringpi=True
+	#env.Append(CCFLAGS="-Ofast -mfpu=vfp -mfloat-abi=hard -march=armv6zk -mtune=arm1176jzf-s")
+        env.Append(CCFLAGS="-DHAS_WIDINGPI")
 else:
-	env.Append(CPPPATH = ['/home/hephaisto/external/wiringPi/'])
+	wiringpi=False
+
+env=conf.Finish()
+
 
 env.Append(CCFLAGS="-std=c++11")
 env.Append(CCFLAGS="-DBOOST_ALL_DYN_LINK")
@@ -46,8 +54,11 @@ sources_raspi=[
 "backends/raspi.cpp"
 ]
 
+if wiringpi:
+    sources_daemon+=sources_raspi
+
 configfile=env.Command("config/heinz.conf","../config/heinz.conf",Copy("$TARGET", "$SOURCE"))
 
-heinzd=env.Program(target="heinzd",source=sources_daemon+sources_raspi,LIBS=libs)
+heinzd=env.Program(target="heinzd",source=sources_daemon,LIBS=libs)
 
 Default(heinzd,configfile)

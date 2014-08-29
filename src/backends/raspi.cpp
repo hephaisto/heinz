@@ -2,9 +2,6 @@
 #include <wiringPi.h>
 #include "raspi.hpp"
 
-
-
-
 namespace heinz
 {
 
@@ -49,6 +46,7 @@ void EndpointRaspberry::poll()
 		setCachedValue(digitalRead(pinNumber)==HIGH?1:0);
 }
 
+/*
 #ifndef ENABLE_BACKEND_RASPI
 
 extern "C"
@@ -76,5 +74,6 @@ int digitalRead(int pinNumber)
 
 
 #endif // ENABLE_BACKEND_RASPI
+*/
 
 }	// namespace
