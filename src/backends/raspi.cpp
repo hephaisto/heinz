@@ -1,6 +1,7 @@
 #include <boost/log/trivial.hpp>
 #include <wiringPi.h>
 #include "raspi.hpp"
+#include "exceptions.cpp"
 
 namespace heinz
 {
@@ -30,7 +31,7 @@ pinNumber(pt.get<int>("pin"))
 			throw HeinzException("unable to initialize wiringPi");
 		initialized=true;
 	}
-	pinMode(pinNumber,input?INPUT:OUTPUT);
+	pinMode(pinNumber,getIsInput()?INPUT:OUTPUT);
 }
 
 void EndpointRaspberry::setValue(int64_t value, ScalarEndpointObserver *source)
