@@ -11,7 +11,7 @@ raspi=ARGUMENTS.get("raspi",0)
 if conf.CheckCHeader("wiringPi.h"):
 	wiringpi=True
 	#env.Append(CCFLAGS="-Ofast -mfpu=vfp -mfloat-abi=hard -march=armv6zk -mtune=arm1176jzf-s")
-        env.Append(CCFLAGS="-DHAS_WIDINGPI")
+    env.Append(CCFLAGS="-DHAS_WIRINGPI")
 else:
 	wiringpi=False
 
