@@ -13,7 +13,8 @@ pinNumber(pinNumber)
 {
 	if(!initialized)
 	{
-		wiringPiSetup();
+		if(wiringPiSetup())
+			throw HeinzException("unable to initialize wiringPi");
 		initialized=true;
 	}
 	pinMode(pinNumber,input?INPUT:OUTPUT);
@@ -22,7 +23,15 @@ pinNumber(pinNumber)
 EndpointRaspberry::EndpointRaspberry(ptree &pt)
 :HardwareEndpoint(pt),
 pinNumber(pt.get<int>("pin"))
-{}
+{
+	if(!initialized)
+	{
+		if(wiringPiSetup())
+			throw HeinzException("unable to initialize wiringPi");
+		initialized=true;
+	}
+	pinMode(pinNumber,input?INPUT:OUTPUT);
+}
 
 void EndpointRaspberry::setValue(int64_t value, ScalarEndpointObserver *source)
 {
