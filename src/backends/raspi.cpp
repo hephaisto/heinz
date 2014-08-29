@@ -1,7 +1,7 @@
 #include <boost/log/trivial.hpp>
 #include <wiringPi.h>
 #include "raspi.hpp"
-#include "exceptions.cpp"
+#include "../exceptions.cpp"
 
 namespace heinz
 {
