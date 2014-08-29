@@ -53,9 +53,13 @@ sources_daemon=[
 sources_raspi=[
 "backends/raspi.cpp"
 ]
+libs_raspi=[
+"wiringPi"
+]
 
 if wiringpi:
     sources_daemon+=sources_raspi
+    libs+=libs_raspi
 
 configfile=env.Command("config/heinz.conf","../config/heinz.conf",Copy("$TARGET", "$SOURCE"))
 example=env.Alias("example",configfile)
