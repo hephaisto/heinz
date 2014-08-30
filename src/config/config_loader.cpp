@@ -21,7 +21,7 @@
 namespace heinz
 {
 
-Config load_config(const string &filename)
+shared_ptr<Config> load_config(const string &filename)
 {
 	using boost::property_tree::ptree;
 	ptree pt;
@@ -33,8 +33,9 @@ Config load_config(const string &filename)
 	{
 		throw ConfigException((boost::format("unable to load config file: %1%") % e.what()).str());
 	}
-	Config config;
+	shared_ptr<Config> config=make_shared<Config>();
 
+	// ENDPOINTS
 	BOOST_FOREACH( ptree::value_type &v, pt.get_child("endpoints") )
 	{
 		string name=v.first.data();
@@ -69,7 +70,7 @@ Config load_config(const string &filename)
 			// no matching endpoint type found
 			else
 				throw ConfigException((boost::format("unknown endpoint type: %1%") % type).str());
-			config.endpoints.insert(std::make_pair(name,ptr));
+			config->endpoints.insert(std::make_pair(name,ptr));
 		}
 		catch(std::exception &e)
 		{
@@ -79,6 +80,33 @@ Config load_config(const string &filename)
 		//shared_ptr<Endpoint>(new )
 		//endpoints.insert(v.second.data());
 	}
+
+	// GROUPS
+	BOOST_FOREACH( ptree::value_type &supergroup, pt.get_child("groups") )
+	{
+		string supername=supergroup.first.data();
+		map<string, vector<shared_ptr<Endpoint> > > supergrp;
+		BOOST_FOREACH( ptree::value_type &group, supergroup.second )
+		{
+			string groupname=group.first.data();
+			vector<shared_ptr<Endpoint> > vec;
+			BOOST_FOREACH( ptree::value_type &endpoint, group.second )
+			{
+				string endpointname=endpoint.first.data();
+				try
+				{
+					vec.push_back(config->endpoints.at(endpointname));
+				}
+				catch(std::out_of_range &e)
+				{
+					throw ConfigException((boost::format("endpoint %1% not found") % endpointname).str());
+				}
+			}
+			supergrp.insert(std::make_pair(groupname,vec));
+		}
+		config->groups.insert(std::make_pair(supername,supergrp));
+	}
+
 	return config;
 }
 

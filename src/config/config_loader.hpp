@@ -15,9 +15,10 @@ namespace heinz
 struct Config
 {
 	map<string,shared_ptr<Endpoint> > endpoints;
+	map<string, map<string,vector<shared_ptr<Endpoint> > > > groups;
 };
 
-Config load_config(const string &filename);
+shared_ptr<Config> load_config(const string &filename);
 
 }
 

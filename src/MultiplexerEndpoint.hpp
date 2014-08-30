@@ -19,7 +19,7 @@ class MultiplexerEndpoint : public ScalarEndpoint
 {
 public:
 	MultiplexerEndpoint(string description, EnRangeType rangeType, vector<shared_ptr<ScalarEndpoint> > endpoints);
-	MultiplexerEndpoint(ptree &pt, Config &config);
+	MultiplexerEndpoint(ptree &pt, shared_ptr<Config> config);
 	virtual void setValue(int64_t value, ScalarEndpointObserver *source);
 	virtual int64_t getValue();
 	virtual bool isValid();

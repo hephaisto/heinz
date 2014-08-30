@@ -22,7 +22,7 @@ endpoints(endpoints)
 	}
 }
 
-MultiplexerEndpoint::MultiplexerEndpoint(ptree &pt, Config &config)
+MultiplexerEndpoint::MultiplexerEndpoint(ptree &pt, shared_ptr<Config> config)
 :ScalarEndpoint(pt,false)
 {
 	BOOST_FOREACH( ptree::value_type &v2, pt.get_child("endpoints") )
@@ -30,7 +30,7 @@ MultiplexerEndpoint::MultiplexerEndpoint(ptree &pt, Config &config)
 		string sub_name=v2.first.data();
 		try
 		{
-			shared_ptr<Endpoint> sub_endpoint(config.endpoints.at(sub_name));
+			shared_ptr<Endpoint> sub_endpoint(config->endpoints.at(sub_name));
 			shared_ptr<ScalarEndpoint> sub_endpoint_scalar(std::dynamic_pointer_cast<ScalarEndpoint>(sub_endpoint));
 			if(sub_endpoint_scalar==nullptr)
 				throw ConfigException((boost::format("endpoint %1% is not scalar") % sub_name).str());
