@@ -8,10 +8,9 @@ namespace heinz
 HeinzException::HeinzException(string text)
 :text(text)
 {
-	std::cerr<<text<<"\n";
 }
 
-const char* HeinzException::what()
+const char* HeinzException::what() const noexcept
 {
 	return text.c_str();
 }

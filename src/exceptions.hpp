@@ -23,7 +23,7 @@ class HeinzException : public std::exception
 {
 public:
 	HeinzException(string text);
-	const char* what();
+	virtual const char* what() const noexcept;
 private:
 	string text;
 };
