@@ -9,7 +9,7 @@ EndpointSliderWidget::EndpointSliderWidget(ScalarEndpoint *endpoint, Wt::WContai
 :EndpointWidget(endpoint,parent),
 ScalarEndpointObserver(Wt::WApplication::instance()->sessionId(),endpoint)
 {
-	slider=new Wt::WSlider(Wt::Horizontal,parent);
+	slider=new Wt::WSlider(Wt::Horizontal,this);
 	slider->setRange(0,255);
 	slider->setValue(endpoint->getValue());
 	slider->valueChanged().connect(this,&EndpointSliderWidget::sliderUpdated);
