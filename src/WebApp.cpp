@@ -1,4 +1,6 @@
 #include <Wt/WBootstrapTheme>
+#include <Wt/WTabWidget>
+#include <Wt/WTextArea>
 #include <boost/foreach.hpp>
 
 #include "WebApp.hpp"
@@ -21,15 +23,21 @@ config(config)
 	setTheme(theme);
 	Wt::WContainerWidget *tmp=new Wt::WContainerWidget(root());
 
-	// replace with groups
-	vector<shared_ptr<Endpoint> > currentlist;
-	BOOST_FOREACH(auto p,config->endpoints)
+	Wt::WTabWidget *mainTabs = new Wt::WTabWidget(tmp);
+	BOOST_FOREACH(auto supergroup, config->groups)
 	{
-		currentlist.push_back(p.second);
+		Wt::WTabWidget *subTabs = new Wt::WTabWidget(NULL);
+		BOOST_FOREACH(auto group, supergroup.second)
+		{
+			EndpointListWidget *listWidget=new EndpointListWidget(group.second,NULL);
+			subTabs->addTab(listWidget,group.first, Wt::WTabWidget::PreLoading);
+		}
+		mainTabs->addTab(subTabs,supergroup.first, Wt::WTabWidget::PreLoading);
 	}
+	mainTabs->addTab(new Wt::WTextArea("Settings"),"Settings", Wt::WTabWidget::PreLoading);
+	mainTabs->setStyleClass("tabwidget");
 
 
-	EndpointListWidget *list=new EndpointListWidget(currentlist,tmp);
 	enableUpdates(true);
 }
 
