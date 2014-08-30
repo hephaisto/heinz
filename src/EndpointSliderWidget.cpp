@@ -12,7 +12,7 @@ ScalarEndpointObserver(Wt::WApplication::instance()->sessionId(),endpoint)
 	slider=new Wt::WSlider(Wt::Horizontal,this);
 	slider->setRange(0,255);
 	slider->setValue(endpoint->getValue());
-	slider->valueChanged().connect(this,&EndpointSliderWidget::sliderUpdated);
+	slider->sliderMoved().connect(this,&EndpointSliderWidget::sliderUpdated);
 	//slider->resize(300, 50);
 	//slider->setTickInterval(5);
 	//slider->setTickPosition(Wt::WSlider::TicksBothSides);
@@ -24,10 +24,10 @@ EndpointSliderWidget::~EndpointSliderWidget()
 {
 }
 
-void EndpointSliderWidget::sliderUpdated()
+void EndpointSliderWidget::sliderUpdated(int value)
 {
 	std::cerr<<"slider update received...\n";
-	endpoint->setValue(slider->value(),this);
+	endpoint->setValue(value,this);
 }
 
 void EndpointSliderWidget::internalUpdate(int64_t value)

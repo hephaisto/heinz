@@ -15,7 +15,7 @@ class EndpointSliderWidget : public EndpointWidget, public ScalarEndpointObserve
 public:
 	EndpointSliderWidget(ScalarEndpoint *endpoint, Wt::WContainerWidget *parent=NULL);
 	virtual ~EndpointSliderWidget();
-	void sliderUpdated();
+	void sliderUpdated(int value);
 	virtual void internalUpdate(int64_t value);
 protected:
 	Wt::WSlider *slider;
