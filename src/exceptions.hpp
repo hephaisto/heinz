@@ -54,7 +54,7 @@ Thrown when trying to access the current value of an endpoint with invalid value
 class InvalidValueException : public HeinzException
 {
 public:
-	InvalidValueException();
+	InvalidValueException(string endpointName);
 };
 
 /**

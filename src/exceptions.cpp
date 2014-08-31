@@ -23,8 +23,8 @@ InvalidStateDetectedException::InvalidStateDetectedException(string text)
 :HeinzException(text)
 {}
 
-InvalidValueException::InvalidValueException()
-:HeinzException("Trying to access invalid value!")
+InvalidValueException::InvalidValueException(string endpointName)
+:HeinzException((boost::format("Trying to access invalid value of endpoint %1%!") % endpointName).str())
 {}
 
 InvalidParameterException::InvalidParameterException(string text)
