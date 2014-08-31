@@ -10,7 +10,7 @@
 namespace heinz
 {
 
-class EndpointOnOffButtonWidget : public EndpointWidget, public ScalarEndpointObserver
+class EndpointOnOffButtonWidget : public EndpointWidget, public ScalarEndpoint::ObservingWidget
 {
 public:
 	EndpointOnOffButtonWidget(shared_ptr<ScalarEndpoint> endpoint, Wt::WContainerWidget *parent=NULL);
@@ -21,6 +21,7 @@ public:
 protected:
 	Wt::WPushButton *btnOn;
 	Wt::WPushButton *btnOff;
+	shared_ptr<ScalarEndpoint> endpoint;
 };
 
 }

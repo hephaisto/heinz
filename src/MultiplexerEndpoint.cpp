@@ -20,11 +20,15 @@ endpoints(endpoints)
 	}
 }
 
+MultiplexerEndpoint::~MultiplexerEndpoint()
+{
+	BOOST_FOREACH(auto p, signalConnections)
+		p.disconnect();
+}
+
 shared_ptr<MultiplexerEndpoint> MultiplexerEndpoint::createMultiplexerEndpoint(ptree &pt, shared_ptr<Config> config)
 {
 	shared_ptr<MultiplexerEndpoint> ptr(new MultiplexerEndpoint(pt,config));
-	BOOST_FOREACH(shared_ptr<ScalarEndpoint> ep,ptr->endpoints)
-		ptr->subObservers.push_back(std::make_shared<MultiplexerObserverHelper>(ep, ptr));
 	return ptr;
 }
 
@@ -61,15 +65,16 @@ void MultiplexerEndpoint::addSubEndpoint(string sub_name, shared_ptr<ScalarEndpo
 		throw ConfigException((boost::format("endpoint %1% has not the same range as the multiplexer endpoint") % sub_name).str());
 
 	endpoints.push_back(subEndpoint);
+	signalConnections.push_back(subEndpoint->getUpdateSignal().connect(boost::bind(&MultiplexerEndpoint::internalUpdate,this)));
 }
 
-void MultiplexerEndpoint::setValue(int64_t value, ScalarEndpointObserver *source)
+void MultiplexerEndpoint::setValue(int64_t value)
 {
 	{
 		boost::shared_lock<ScalarEndpoint> guard(*this);
 		std::cerr<<"changing "<<endpoints.size()<<"endpoints by multiplexer\n";
 		for(auto it=endpoints.begin();it!=endpoints.end();it++)
-			(*it)->setValue(value, source);
+			(*it)->setValue(value);
 		cachedValue=value;
 	}
 }
@@ -99,24 +104,9 @@ bool MultiplexerEndpoint::isValid()
 	return true;
 }
 
-void MultiplexerEndpoint::subEndpointChanged()
+void MultiplexerEndpoint::internalUpdate()
 {
-	triggerUpdates(NULL);
-}
-
-
-MultiplexerObserverHelper::MultiplexerObserverHelper(std::shared_ptr<ScalarEndpoint> observable, std::weak_ptr<MultiplexerEndpoint> multiplexer)
-:ScalarEndpointObserver("",observable),
-multiplexer(multiplexer)
-{}
-
-void MultiplexerObserverHelper::internalUpdate()
-{
-	std::cerr<<"MultiplexerObserverHelper::internalUpdate\n";
-	if(auto m=multiplexer.lock())
-		m->subEndpointChanged();
-	else
-		std::cerr<<"unable to get lock on multiplexer - pointer already deleted?\n";
+	triggerUpdates();
 }
 
 }

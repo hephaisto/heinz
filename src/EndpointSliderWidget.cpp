@@ -7,7 +7,8 @@ namespace heinz
 {
 EndpointSliderWidget::EndpointSliderWidget(shared_ptr<ScalarEndpoint> endpoint, Wt::WContainerWidget *parent)
 :EndpointWidget(endpoint,parent),
-ScalarEndpointObserver(Wt::WApplication::instance()->sessionId(),endpoint)
+ScalarEndpoint::ObservingWidget(endpoint),
+endpoint(endpoint)
 {
 	slider=new Wt::WSlider(Wt::Horizontal,widgetContainer);
 	slider->setRange(0,255);
@@ -27,7 +28,7 @@ EndpointSliderWidget::~EndpointSliderWidget()
 void EndpointSliderWidget::sliderUpdated(int value)
 {
 	std::cerr<<"slider update received...\n";
-	endpoint->setValue(value,this);
+	endpoint->setValue(value);
 }
 
 void EndpointSliderWidget::internalUpdate()

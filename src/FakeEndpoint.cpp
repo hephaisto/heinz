@@ -12,14 +12,14 @@ FakeEndpoint::FakeEndpoint(ptree &pt)
 :HardwareEndpoint(pt)
 {}
 
-void FakeEndpoint::setValue(int64_t value, ScalarEndpointObserver *source)
+void FakeEndpoint::setValue(int64_t value)
 {
 	checkValueForValidity(value);
 	{
 		boost::unique_lock<FakeEndpoint> guard(*this);
 		this->cachedValue=value;
 	}
-	triggerUpdates(source);
+	triggerUpdates();
 	BOOST_LOG_TRIVIAL(info)<<"endpoint set to "<<value;
 }
 

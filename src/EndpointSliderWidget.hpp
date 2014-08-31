@@ -10,7 +10,7 @@
 namespace heinz
 {
 
-class EndpointSliderWidget : public EndpointWidget, public ScalarEndpointObserver
+class EndpointSliderWidget : public EndpointWidget, public ScalarEndpoint::ObservingWidget
 {
 public:
 	EndpointSliderWidget(shared_ptr<ScalarEndpoint> endpoint, Wt::WContainerWidget *parent=NULL);
@@ -19,6 +19,7 @@ public:
 	virtual void internalUpdate();
 protected:
 	Wt::WSlider *slider;
+	shared_ptr<ScalarEndpoint> endpoint;
 };
 
 }

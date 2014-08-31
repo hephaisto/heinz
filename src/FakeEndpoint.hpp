@@ -14,7 +14,7 @@ class FakeEndpoint : public HardwareEndpoint
 public:
 	FakeEndpoint(string description, EnRangeType rangeType,bool isInput);
 	FakeEndpoint(ptree &pt);
-	virtual void setValue(int64_t value, ScalarEndpointObserver *source);
+	virtual void setValue(int64_t value);
 	virtual bool isValid();
 };
 

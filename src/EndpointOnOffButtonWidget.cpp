@@ -7,7 +7,8 @@ namespace heinz
 {
 EndpointOnOffButtonWidget::EndpointOnOffButtonWidget(shared_ptr<ScalarEndpoint> endpoint, Wt::WContainerWidget *parent)
 :EndpointWidget(endpoint,parent),
-ScalarEndpointObserver(Wt::WApplication::instance()->sessionId(),endpoint)
+ScalarEndpoint::ObservingWidget(endpoint),
+endpoint(endpoint)
 {
 	btnOn=new Wt::WPushButton("ON",widgetContainer);
 	btnOff=new Wt::WPushButton("OFF",widgetContainer);
@@ -34,12 +35,12 @@ EndpointOnOffButtonWidget::~EndpointOnOffButtonWidget()
 
 void EndpointOnOffButtonWidget::btnOnClicked()
 {
-	endpoint->setValue(1,this);
+	endpoint->setValue(1);
 	internalUpdate();
 }
 void EndpointOnOffButtonWidget::btnOffClicked()
 {
-	endpoint->setValue(0,this);
+	endpoint->setValue(0);
 	internalUpdate();
 }
 
