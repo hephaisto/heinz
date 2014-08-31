@@ -35,7 +35,7 @@ invert(pt.get<bool>("invert",false))
 	pinMode(pinNumber,getIsInput()?INPUT:OUTPUT);
 }
 
-void EndpointRaspberry::setValue(int64_t value, ScalarEndpointObserver *source)
+void EndpointRaspberry::setValue(int64_t value)
 {
 	checkValueForValidity(value);
 	digitalWrite(pinNumber,(invert?!value:value)?HIGH:LOW);
@@ -43,7 +43,7 @@ void EndpointRaspberry::setValue(int64_t value, ScalarEndpointObserver *source)
 		boost::unique_lock<EndpointRaspberry> guard(*this);
 		this->cachedValue=value;
 	}
-	triggerUpdates(source);
+	triggerUpdates();
 }
 
 bool EndpointRaspberry::isValid()

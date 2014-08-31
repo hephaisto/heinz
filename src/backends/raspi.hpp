@@ -11,7 +11,7 @@ class EndpointRaspberry : public HardwareEndpoint, public PollingObject
 public:
 	EndpointRaspberry(string description, int pinNumber, bool input);
 	EndpointRaspberry(ptree &pt);
-	virtual void setValue(int64_t value, ScalarEndpointObserver *source);
+	virtual void setValue(int64_t value);
 	virtual bool isValid();
 	virtual void poll();
 private:
