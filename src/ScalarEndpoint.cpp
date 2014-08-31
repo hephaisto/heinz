@@ -99,6 +99,14 @@ EnRangeType ScalarEndpoint::getRange()
 //	btn->setChecked(cachedValue);
 //}
 
+shared_ptr<ScalarEndpoint> ScalarEndpoint::getSharedScalarEndpoint()
+{
+	shared_ptr<ScalarEndpoint> tmp=std::dynamic_pointer_cast<ScalarEndpoint>(shared_from_this());
+	if(!tmp)
+		throw std::bad_cast();
+	return tmp;
+}
+
 
 Wt::WContainerWidget* ScalarEndpoint::addEndpointWidgetToContainer(Wt::WContainerWidget *parent)
 {
@@ -106,12 +114,12 @@ Wt::WContainerWidget* ScalarEndpoint::addEndpointWidgetToContainer(Wt::WContaine
 	{
 		case RANGE_U1:
 		{
-			return new EndpointOnOffButtonWidget(this,parent);
+			return new EndpointOnOffButtonWidget(getSharedScalarEndpoint(),parent);
 		}break;
 		case RANGE_U8:
 		case RANGE_S8:
 		{
-			return new EndpointSliderWidget(this, parent);
+			return new EndpointSliderWidget(getSharedScalarEndpoint(), parent);
 		}break;
 		default:
 			throw InvalidStateDetectedException("invalid range type");
@@ -175,17 +183,20 @@ void ScalarEndpoint::triggerUpdates(ScalarEndpointObserver *observer)
 	std::cerr<<description<<": triggerUpdates()\n";
 	boost::shared_lock<ScalarEndpoint> guard(*this);
 	std::cerr<<"***** starting to trigger updates for "<<observers.size()<<" observers\n";
-	for(auto it=observers.begin();it!=observers.end();it++)
+	if(guard.owns_lock())
 	{
-		std::cerr<<"observer\n";
-		if(*it==observer)
-			continue;	// skip the source of the event; updating would deadlock!
-		std::cerr<<"updating\n";
-		(*it)->update(cachedValue);
+		for(auto it=observers.begin();it!=observers.end();it++)
+		{
+			std::cerr<<"observer\n";
+			if(*it==observer)
+				continue;	// skip the source of the event; updating would deadlock!
+			std::cerr<<"updating\n";
+			(*it)->update();
+		}
 	}
 }
 
-ScalarEndpointObserver::ScalarEndpointObserver(string sessionID,ScalarEndpoint* endpoint)
+ScalarEndpointObserver::ScalarEndpointObserver(string sessionID,shared_ptr<ScalarEndpoint> endpoint)
 :endpoint(endpoint),
 sessionID(sessionID)
 {
@@ -195,9 +206,13 @@ ScalarEndpointObserver::~ScalarEndpointObserver()
 {
 	endpoint->unRegisterObserver(this);
 }
-void ScalarEndpointObserver::update(int64_t value)
+void ScalarEndpointObserver::update()
 {
-	Wt::WServer::instance()->post(sessionID, boost::bind(&ScalarEndpointObserver::internalUpdate,this,value));
+	std::cerr<<"updating. this->sessionID="<<sessionID<<"\n";
+	if((sessionID=="") || (Wt::WApplication::instance()->sessionId()==sessionID))	// no sessionID: non-widget observer; same sessionID: no posting necessary
+		internalUpdate();
+	else
+		Wt::WServer::instance()->post(sessionID, boost::bind(&ScalarEndpointObserver::internalUpdate,this));
 }
 
 

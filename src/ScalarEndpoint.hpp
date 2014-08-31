@@ -18,12 +18,13 @@ using boost::property_tree::ptree;
 /**
 Base class for all endpoints which have scalar (or say: integral) values.
 **/
-class ScalarEndpoint : public Endpoint
+class ScalarEndpoint : public Endpoint,  public std::enable_shared_from_this<ScalarEndpoint>
 {
 public:
 	ScalarEndpoint(string description, EnRangeType rangeType,bool isInput);
 	ScalarEndpoint(ptree &pt);
 	ScalarEndpoint(ptree &pt, bool isInput);
+	shared_ptr<ScalarEndpoint> getSharedScalarEndpoint();
 	virtual Wt::WContainerWidget* addEndpointWidgetToContainer(Wt::WContainerWidget *parent);
 	virtual void setValue(int64_t value, ScalarEndpointObserver *source)=0;
 	virtual int64_t getValue();
@@ -51,12 +52,12 @@ This class registers itself as an observer by the corresponding endpoint and get
 class ScalarEndpointObserver
 {
 public:
-	ScalarEndpointObserver(string sessionID, ScalarEndpoint* endpoint);
+	ScalarEndpointObserver(string sessionID, shared_ptr<ScalarEndpoint> endpoint);
 	virtual ~ScalarEndpointObserver();
-	void update(int64_t value);
+	void update();
 protected:
-	ScalarEndpoint *endpoint;
-	virtual void internalUpdate(int64_t value)=0;
+	shared_ptr<ScalarEndpoint> endpoint;
+	virtual void internalUpdate()=0;
 	string sessionID;
 };
 

@@ -1,5 +1,6 @@
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
+#include <Wt/WApplication>
 
 #include "MultiplexerEndpoint.hpp"
 #include "exceptions.hpp"
@@ -15,11 +16,16 @@ endpoints(endpoints)
 		throw HeinzException("Multiplexer endpoints need to have at least one sub-endpoint!");
 	for(auto it=endpoints.begin();it!=endpoints.end();it++)
 	{
-		if((*it)->getIsInput())
-			throw HeinzException("multiplexer endpoints can only multiplex outputs!");
-		if((*it)->getRange()!=rangeType)
-			throw HeinzException("all multiplexed endpoints need to have the same range type as the multiplexer endpoint!");
+		addSubEndpoint("",*it);
 	}
+}
+
+shared_ptr<MultiplexerEndpoint> MultiplexerEndpoint::createMultiplexerEndpoint(ptree &pt, shared_ptr<Config> config)
+{
+	shared_ptr<MultiplexerEndpoint> ptr(new MultiplexerEndpoint(pt,config));
+	BOOST_FOREACH(shared_ptr<ScalarEndpoint> ep,ptr->endpoints)
+		ptr->subObservers.push_back(std::make_shared<MultiplexerObserverHelper>(ep, ptr));
+	return ptr;
 }
 
 MultiplexerEndpoint::MultiplexerEndpoint(ptree &pt, shared_ptr<Config> config)
@@ -30,13 +36,13 @@ MultiplexerEndpoint::MultiplexerEndpoint(ptree &pt, shared_ptr<Config> config)
 		string sub_name=v2.first.data();
 		try
 		{
-			shared_ptr<Endpoint> sub_endpoint(config->endpoints.at(sub_name));
-			shared_ptr<ScalarEndpoint> sub_endpoint_scalar(std::dynamic_pointer_cast<ScalarEndpoint>(sub_endpoint));
+			shared_ptr<Endpoint> subEndpoint(config->endpoints.at(sub_name));
+
+			shared_ptr<ScalarEndpoint> sub_endpoint_scalar(std::dynamic_pointer_cast<ScalarEndpoint>(subEndpoint));
 			if(sub_endpoint_scalar==nullptr)
 				throw ConfigException((boost::format("endpoint %1% is not scalar") % sub_name).str());
-			if(sub_endpoint_scalar->getIsInput())
-				throw ConfigException((boost::format("endpoint %1% is an input-endpoint") % sub_name).str());
-			endpoints.push_back(sub_endpoint_scalar);
+
+			addSubEndpoint(sub_name,sub_endpoint_scalar);
 		}
 		catch(std::out_of_range &e)
 		{
@@ -45,23 +51,34 @@ MultiplexerEndpoint::MultiplexerEndpoint(ptree &pt, shared_ptr<Config> config)
 	}
 }
 
+void MultiplexerEndpoint::addSubEndpoint(string sub_name, shared_ptr<ScalarEndpoint> subEndpoint)
+{
+	if(subEndpoint->getIsInput())
+		throw ConfigException((boost::format("endpoint %1% is an input-endpoint") % sub_name).str());
+
+
+	if(subEndpoint->getRange()!=rangeType)
+		throw ConfigException((boost::format("endpoint %1% has not the same range as the multiplexer endpoint") % sub_name).str());
+
+	endpoints.push_back(subEndpoint);
+}
+
 void MultiplexerEndpoint::setValue(int64_t value, ScalarEndpointObserver *source)
 {
 	{
-		boost::unique_lock<ScalarEndpoint> guard(*this);
+		boost::shared_lock<ScalarEndpoint> guard(*this);
 		std::cerr<<"changing "<<endpoints.size()<<"endpoints by multiplexer\n";
 		for(auto it=endpoints.begin();it!=endpoints.end();it++)
 			(*it)->setValue(value, source);
 		cachedValue=value;
 	}
-	triggerUpdates(NULL);
 }
 int64_t MultiplexerEndpoint::getValue()
 {
 	boost::shared_lock<ScalarEndpoint> guard(*this);
-	if(!getIsInput())
-		throw InvalidValueException();
-	return endpoints[0]->getValue();
+	if(!isValid())
+		throw InvalidValueException(description);
+	return (*endpoints.begin())->getValue();
 }
 bool MultiplexerEndpoint::isValid()
 {
@@ -88,14 +105,18 @@ void MultiplexerEndpoint::subEndpointChanged()
 }
 
 
-MultiplexerObserverHelper::MultiplexerObserverHelper(string sessionID, ScalarEndpoint* observable, MultiplexerEndpoint *multiplexer)
-:ScalarEndpointObserver(sessionID,observable),
+MultiplexerObserverHelper::MultiplexerObserverHelper(std::shared_ptr<ScalarEndpoint> observable, std::weak_ptr<MultiplexerEndpoint> multiplexer)
+:ScalarEndpointObserver("",observable),
 multiplexer(multiplexer)
 {}
 
-void MultiplexerObserverHelper::internalUpdate(int64_t value)
+void MultiplexerObserverHelper::internalUpdate()
 {
-	multiplexer->subEndpointChanged();
+	std::cerr<<"MultiplexerObserverHelper::internalUpdate\n";
+	if(auto m=multiplexer.lock())
+		m->subEndpointChanged();
+	else
+		std::cerr<<"unable to get lock on multiplexer - pointer already deleted?\n";
 }
 
 }

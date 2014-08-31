@@ -5,11 +5,11 @@
 
 namespace heinz
 {
-EndpointSliderWidget::EndpointSliderWidget(ScalarEndpoint *endpoint, Wt::WContainerWidget *parent)
+EndpointSliderWidget::EndpointSliderWidget(shared_ptr<ScalarEndpoint> endpoint, Wt::WContainerWidget *parent)
 :EndpointWidget(endpoint,parent),
 ScalarEndpointObserver(Wt::WApplication::instance()->sessionId(),endpoint)
 {
-	slider=new Wt::WSlider(Wt::Horizontal,this);
+	slider=new Wt::WSlider(Wt::Horizontal,widgetContainer);
 	slider->setRange(0,255);
 	slider->setValue(endpoint->getValue());
 	slider->sliderMoved().connect(this,&EndpointSliderWidget::sliderUpdated);
@@ -30,10 +30,13 @@ void EndpointSliderWidget::sliderUpdated(int value)
 	endpoint->setValue(value,this);
 }
 
-void EndpointSliderWidget::internalUpdate(int64_t value)
+void EndpointSliderWidget::internalUpdate()
 {
-	slider->setValue(value);
-	Wt::WApplication::instance()->triggerUpdate();
+	if(endpoint->isValid())
+	{
+		slider->setValue(endpoint->getValue());
+		Wt::WApplication::instance()->triggerUpdate();
+	}
 }
 
 

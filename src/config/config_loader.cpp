@@ -56,7 +56,7 @@ shared_ptr<Config> load_config(const string &filename)
 			// multiplexer endpoint
 			else if(type=="multiplex")
 			{
-				ptr=make_shared<MultiplexerEndpoint>(v.second,config);
+				ptr=MultiplexerEndpoint::createMultiplexerEndpoint(v.second,config);
 			}
 			// raspi
 			else if(type=="raspi")

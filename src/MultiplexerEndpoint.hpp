@@ -9,23 +9,29 @@ class MultiplexerEndpoint;
 class MultiplexerObserverHelper : public ScalarEndpointObserver
 {
 public:
-	MultiplexerObserverHelper(string sessionID, ScalarEndpoint* observable, MultiplexerEndpoint *multiplexer);
-	virtual void internalUpdate(int64_t value);
+	MultiplexerObserverHelper(shared_ptr<ScalarEndpoint> observable, weak_ptr<MultiplexerEndpoint> multiplexer);
+	virtual void internalUpdate();
 protected:
-	MultiplexerEndpoint *multiplexer;
+	weak_ptr<MultiplexerEndpoint> multiplexer;
+	shared_ptr<ScalarEndpoint> observable;
 };
 
 class MultiplexerEndpoint : public ScalarEndpoint
 {
 public:
-	MultiplexerEndpoint(string description, EnRangeType rangeType, vector<shared_ptr<ScalarEndpoint> > endpoints);
-	MultiplexerEndpoint(ptree &pt, shared_ptr<Config> config);
+	static shared_ptr<MultiplexerEndpoint> createMultiplexerEndpoint(ptree &pt, shared_ptr<Config> config);
+	shared_ptr<MultiplexerEndpoint> getSharedMultiplexerEndpoint();
+
 	virtual void setValue(int64_t value, ScalarEndpointObserver *source);
 	virtual int64_t getValue();
 	virtual bool isValid();
 private:
-	friend void MultiplexerObserverHelper::internalUpdate(int64_t value);
+	MultiplexerEndpoint(string description, EnRangeType rangeType, vector<shared_ptr<ScalarEndpoint> > endpoints);
+	MultiplexerEndpoint(ptree &pt, shared_ptr<Config> config);
+
+	friend void MultiplexerObserverHelper::internalUpdate();
 	void subEndpointChanged();
+	void addSubEndpoint(string sub_name, shared_ptr<ScalarEndpoint> sub_endpoint);
 
 	vector<shared_ptr<ScalarEndpoint> > endpoints;
 	vector<shared_ptr<MultiplexerObserverHelper> > subObservers;

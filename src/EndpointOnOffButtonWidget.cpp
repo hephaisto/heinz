@@ -5,12 +5,12 @@
 
 namespace heinz
 {
-EndpointOnOffButtonWidget::EndpointOnOffButtonWidget(ScalarEndpoint *endpoint, Wt::WContainerWidget *parent)
+EndpointOnOffButtonWidget::EndpointOnOffButtonWidget(shared_ptr<ScalarEndpoint> endpoint, Wt::WContainerWidget *parent)
 :EndpointWidget(endpoint,parent),
 ScalarEndpointObserver(Wt::WApplication::instance()->sessionId(),endpoint)
 {
-	btnOn=new Wt::WPushButton("ON",this);
-	btnOff=new Wt::WPushButton("OFF",this);
+	btnOn=new Wt::WPushButton("ON",widgetContainer);
+	btnOff=new Wt::WPushButton("OFF",widgetContainer);
 
 	btnOn->clicked().connect(this,&EndpointOnOffButtonWidget::btnOnClicked);
 	btnOff->clicked().connect(this,&EndpointOnOffButtonWidget::btnOffClicked);
@@ -18,9 +18,9 @@ ScalarEndpointObserver(Wt::WApplication::instance()->sessionId(),endpoint)
 	if(endpoint->isValid())
 	{
 		if(endpoint->getValue())
-			btnOn->hide();
+			btnOn->setEnabled(false);
 		else
-			btnOff->hide();
+			btnOff->setEnabled(false);
 	}
 	else
 	{
@@ -35,26 +35,33 @@ EndpointOnOffButtonWidget::~EndpointOnOffButtonWidget()
 void EndpointOnOffButtonWidget::btnOnClicked()
 {
 	endpoint->setValue(1,this);
-	internalUpdate(1);
+	internalUpdate();
 }
 void EndpointOnOffButtonWidget::btnOffClicked()
 {
 	endpoint->setValue(0,this);
-	internalUpdate(0);
+	internalUpdate();
 }
 
-void EndpointOnOffButtonWidget::internalUpdate(int64_t value)
+void EndpointOnOffButtonWidget::internalUpdate()
 {
-	std::cerr<<"internal update OnOffButtonWidget "<<value<<"\n";
-	if(value)
+	if(endpoint->isValid())
 	{
-		btnOn->hide();
-		btnOff->show();
+		if(endpoint->getValue())
+		{
+			btnOn->setEnabled(false);
+			btnOff->setEnabled(true);
+		}
+		else
+		{
+			btnOn->setEnabled(true);
+			btnOff->setEnabled(false);
+		}
 	}
 	else
 	{
-		btnOn->show();
-		btnOff->hide();
+		btnOn->setEnabled(true);
+		btnOff->setEnabled(true);
 	}
 	Wt::WApplication::instance()->triggerUpdate();
 }

@@ -13,11 +13,11 @@ namespace heinz
 class EndpointOnOffButtonWidget : public EndpointWidget, public ScalarEndpointObserver
 {
 public:
-	EndpointOnOffButtonWidget(ScalarEndpoint *endpoint, Wt::WContainerWidget *parent=NULL);
+	EndpointOnOffButtonWidget(shared_ptr<ScalarEndpoint> endpoint, Wt::WContainerWidget *parent=NULL);
 	virtual ~EndpointOnOffButtonWidget();
 	void btnOnClicked();
 	void btnOffClicked();
-	virtual void internalUpdate(int64_t value);
+	virtual void internalUpdate();
 protected:
 	Wt::WPushButton *btnOn;
 	Wt::WPushButton *btnOff;

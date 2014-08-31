@@ -13,10 +13,10 @@ namespace heinz
 class EndpointSliderWidget : public EndpointWidget, public ScalarEndpointObserver
 {
 public:
-	EndpointSliderWidget(ScalarEndpoint *endpoint, Wt::WContainerWidget *parent=NULL);
+	EndpointSliderWidget(shared_ptr<ScalarEndpoint> endpoint, Wt::WContainerWidget *parent=NULL);
 	virtual ~EndpointSliderWidget();
 	void sliderUpdated(int value);
-	virtual void internalUpdate(int64_t value);
+	virtual void internalUpdate();
 protected:
 	Wt::WSlider *slider;
 };
