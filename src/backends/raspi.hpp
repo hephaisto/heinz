@@ -17,6 +17,7 @@ public:
 private:
 	static bool initialized;
 	int pinNumber;
+	bool invert;
 };
 
 }

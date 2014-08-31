@@ -23,7 +23,8 @@ pinNumber(pinNumber)
 
 EndpointRaspberry::EndpointRaspberry(ptree &pt)
 :HardwareEndpoint(pt),
-pinNumber(pt.get<int>("pin"))
+pinNumber(pt.get<int>("pin")),
+invert(pt.get<bool>("invert",false))
 {
 	if(!initialized)
 	{
@@ -37,7 +38,7 @@ pinNumber(pt.get<int>("pin"))
 void EndpointRaspberry::setValue(int64_t value, ScalarEndpointObserver *source)
 {
 	checkValueForValidity(value);
-	digitalWrite(pinNumber,value?HIGH:LOW);
+	digitalWrite(pinNumber,(invert?!value:value)?HIGH:LOW);
 	{
 		boost::unique_lock<EndpointRaspberry> guard(*this);
 		this->cachedValue=value;
