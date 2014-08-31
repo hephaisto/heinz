@@ -93,7 +93,7 @@ bool MultiplexerEndpoint::isValid()
 	{
 		if(!(*it)->isValid())
 			return false;
-		if(!(*it)->getValue()!=val)
+		if((*it)->getValue()!=val)
 			return false;
 	}
 	return true;
