@@ -13,7 +13,10 @@ public:
 	EndpointRaspberry(ptree &pt);
 	virtual void setValue(int64_t value);
 	virtual bool isValid();
-	virtual void poll();
+
+	// inherited from PollingObject
+	virtual void updatesAvailable();
+	virtual void postUpdates();
 private:
 	static bool initialized;
 	int pinNumber;
