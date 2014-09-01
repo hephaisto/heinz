@@ -12,8 +12,7 @@ namespace heinz
 {
 
 WebApp::WebApp(const Wt::WEnvironment &env, shared_ptr<Config> config)
-:Wt::WApplication(env),
-config(config)
+:Wt::WApplication(env)
 {
 	if(!config)
 		throw HeinzException("invalid config");
@@ -40,8 +39,6 @@ config(config)
 
 	enableUpdates(true);
 }
-
-
 
 
 }

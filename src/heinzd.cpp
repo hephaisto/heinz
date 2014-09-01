@@ -1,28 +1,18 @@
 #include "WebApp.hpp"
-
-namespace heinz
-{
-
-WebApp* createApp(const Wt::WEnvironment &env,shared_ptr<Config> config)
-{
-	return new heinz::WebApp(env,config);
-}
-
-}
-
+#include "heinz.hpp"
 
 int main(int argc, char** argv)
 {
 	using namespace heinz;
-	shared_ptr<Config> config(nullptr);
+	shared_ptr<Heinz> heinz(nullptr);
 	try
 	{
-		config=load_config("config/heinz.conf");
+		heinz=std::make_shared<Heinz>("config/heinz.conf");
 	}
 	catch(std::exception &e)
 	{
-		std::cerr<<"Caught exception while loading config: "<<e.what()<<"\n";
+		std::cerr<<"Caught exception while starting heinz: "<<e.what()<<"\n";
 		return 1;
 	}
-	return Wt::WRun(argc,argv,boost::bind(createApp,_1,config));
+	return Wt::WRun(argc,argv,heinz->getAppCreator());
 }

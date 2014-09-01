@@ -1,3 +1,6 @@
+#ifndef WEBAPP_H
+#define WEBAPP_H
+
 #include <map>
 using std::map;
 #include <Wt/WApplication>
@@ -13,7 +16,8 @@ class WebApp : public Wt::WApplication
 public:
 	WebApp(const Wt::WEnvironment &env, shared_ptr<Config> config);
 private:
-	shared_ptr<Config> config;
 };
 
 }
+
+#endif // WEBAPP_H

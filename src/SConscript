@@ -42,6 +42,7 @@ sources_daemon=[
 "FakeEndpoint.cpp",
 "exceptions.cpp",
 "heinzd.cpp",
+"heinz.cpp",
 "EndpointListWidget.cpp",
 "WebApp.cpp",
 "config/config_loader.cpp",

@@ -35,7 +35,18 @@ protected:
 class PollingObject
 {
 public:
-	virtual void poll()=0;
+	/**
+	Checks whether updates are available for this object.
+
+	This will be checked by the global polling thread.
+	**/
+	virtual bool updatesAvailable()=0;
+	/**
+	Posts updates to the system.
+
+	This will be run from one of the threads in the worker pool, since duration of the invocation can possibly be very long.
+	**/
+	virtual void postUpdates()=0;
 };
 
 }
