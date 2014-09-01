@@ -21,7 +21,7 @@ void Heinz::pollingLoop()
 			if(p->updatesAvailable())
 				std::cerr<<"updates available! - post to thread pool here";	// TODO
 		}
-		boost::this_thread::interruption_point();	// allow interrupting
+		boost::this_thread::sleep_for(boost::chrono::milliseconds(100));	// wait, allow interrupting
 	}
 }
 WebApp* Heinz::createApp(const Wt::WEnvironment &env)
@@ -33,7 +33,14 @@ boost::function<WebApp* (const Wt::WEnvironment &env)> Heinz::getAppCreator()
 	return boost::bind(&Heinz::createApp,this,_1);
 }
 Heinz::Heinz(string configFilename)
-:config(load_config(configFilename))
-{}
+:config(load_config(configFilename)),
+pollingThread(&Heinz::pollingLoop,this)
+{
+}
+Heinz::~Heinz()
+{
+	pollingThread.interrupt();
+	pollingThread.join();
+}
 
 }

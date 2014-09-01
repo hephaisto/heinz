@@ -1,3 +1,4 @@
+#include <boost/thread.hpp>
 #include "Endpoint.hpp"
 #include "common.hpp"
 #include "config/config_loader.hpp"
@@ -10,6 +11,7 @@ class Heinz
 {
 public:
 	Heinz(string configFilename);
+	virtual ~Heinz();
 	shared_ptr<Config> getConfig();
 	boost::function<WebApp* (const Wt::WEnvironment &env)> getAppCreator();
 private:
@@ -17,6 +19,7 @@ private:
 	shared_ptr<Config> config;
 	vector<shared_ptr<PollingObject> > pollingObjects;
 	void pollingLoop();
+	boost::thread pollingThread;
 };
 
 }
