@@ -1,11 +1,11 @@
-#include "EndpointSliderWidget.hpp"
+#include "SliderWidget.hpp"
 
 #include <Wt/WApplication>
 #include <iostream>
 
 namespace heinz
 {
-EndpointSliderWidget::EndpointSliderWidget(shared_ptr<ScalarEndpoint> endpoint, Wt::WContainerWidget *parent)
+SliderWidget::SliderWidget(shared_ptr<ScalarEndpoint> endpoint, Wt::WContainerWidget *parent)
 :EndpointWidget(endpoint,parent),
 ScalarEndpoint::ObservingWidget(endpoint),
 endpoint(endpoint)
@@ -13,7 +13,7 @@ endpoint(endpoint)
 	slider=new Wt::WSlider(Wt::Horizontal,widgetContainer);
 	slider->setRange(0,255);
 	slider->setValue(endpoint->getValue());
-	slider->sliderMoved().connect(this,&EndpointSliderWidget::sliderUpdated);
+	slider->sliderMoved().connect(this,&SliderWidget::sliderUpdated);
 	//slider->resize(300, 50);
 	//slider->setTickInterval(5);
 	//slider->setTickPosition(Wt::WSlider::TicksBothSides);
@@ -21,17 +21,17 @@ endpoint(endpoint)
 	//slider->setNativeControl(true);
 }
 
-EndpointSliderWidget::~EndpointSliderWidget()
+SliderWidget::~SliderWidget()
 {
 }
 
-void EndpointSliderWidget::sliderUpdated(int value)
+void SliderWidget::sliderUpdated(int value)
 {
 	std::cerr<<"slider update received...\n";
 	endpoint->setValue(value);
 }
 
-void EndpointSliderWidget::internalUpdate()
+void SliderWidget::internalUpdate()
 {
 	if(endpoint->isValid())
 	{

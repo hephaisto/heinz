@@ -2,8 +2,8 @@
 #define ENDPOINT_WIDGET_H
 #include <Wt/WContainerWidget>
 
-#include "Endpoint.hpp"
-#include "common.hpp"
+#include "../Endpoint.hpp"
+#include "../common.hpp"
 
 namespace heinz
 {

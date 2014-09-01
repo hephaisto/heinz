@@ -1,11 +1,11 @@
-#include "EndpointOnOffButtonWidget.hpp"
+#include "OnOffButtonWidget.hpp"
 
 #include <Wt/WApplication>
 #include <iostream>
 
 namespace heinz
 {
-EndpointOnOffButtonWidget::EndpointOnOffButtonWidget(shared_ptr<ScalarEndpoint> endpoint, Wt::WContainerWidget *parent)
+OnOffButtonWidget::OnOffButtonWidget(shared_ptr<ScalarEndpoint> endpoint, Wt::WContainerWidget *parent)
 :EndpointWidget(endpoint,parent),
 ScalarEndpoint::ObservingWidget(endpoint),
 endpoint(endpoint)
@@ -13,8 +13,8 @@ endpoint(endpoint)
 	btnOn=new Wt::WPushButton("ON",widgetContainer);
 	btnOff=new Wt::WPushButton("OFF",widgetContainer);
 
-	btnOn->clicked().connect(this,&EndpointOnOffButtonWidget::btnOnClicked);
-	btnOff->clicked().connect(this,&EndpointOnOffButtonWidget::btnOffClicked);
+	btnOn->clicked().connect(this,&OnOffButtonWidget::btnOnClicked);
+	btnOff->clicked().connect(this,&OnOffButtonWidget::btnOffClicked);
 
 	if(endpoint->isValid())
 	{
@@ -29,22 +29,22 @@ endpoint(endpoint)
 	}
 }
 
-EndpointOnOffButtonWidget::~EndpointOnOffButtonWidget()
+OnOffButtonWidget::~OnOffButtonWidget()
 {
 }
 
-void EndpointOnOffButtonWidget::btnOnClicked()
+void OnOffButtonWidget::btnOnClicked()
 {
 	endpoint->setValue(1);
 	internalUpdate();
 }
-void EndpointOnOffButtonWidget::btnOffClicked()
+void OnOffButtonWidget::btnOffClicked()
 {
 	endpoint->setValue(0);
 	internalUpdate();
 }
 
-void EndpointOnOffButtonWidget::internalUpdate()
+void OnOffButtonWidget::internalUpdate()
 {
 	if(endpoint->isValid())
 	{

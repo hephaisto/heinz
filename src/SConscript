@@ -33,6 +33,7 @@ libs=[
 "boost_signals"
 ]
 
+sources_widgets=Glob("widgets/*.cpp")
 sources_daemon=[
 "constants.cpp",
 "Endpoint.cpp",
@@ -43,12 +44,10 @@ sources_daemon=[
 "heinzd.cpp",
 "EndpointListWidget.cpp",
 "WebApp.cpp",
-"EndpointSliderWidget.cpp",
-"EndpointWidget.cpp",
-"EndpointOnOffButtonWidget.cpp",
 "config/config_loader.cpp",
 "MultiplexerEndpoint.cpp"
-]
+]+sources_widgets
+
 
 sources_raspi=[
 "backends/raspi.cpp"

@@ -5,8 +5,8 @@
 #include <Wt/WServer>
 
 #include "exceptions.hpp"
-#include "EndpointSliderWidget.hpp"
-#include "EndpointOnOffButtonWidget.hpp"
+#include "widgets/SliderWidget.hpp"
+#include "widgets/OnOffButtonWidget.hpp"
 
 namespace heinz
 {
@@ -120,12 +120,12 @@ Wt::WContainerWidget* ScalarEndpoint::addEndpointWidgetToContainer(Wt::WContaine
 	{
 		case RANGE_U1:
 		{
-			return new EndpointOnOffButtonWidget(getSharedScalarEndpoint(),parent);
+			return new OnOffButtonWidget(getSharedScalarEndpoint(),parent);
 		}break;
 		case RANGE_U8:
 		case RANGE_S8:
 		{
-			return new EndpointSliderWidget(getSharedScalarEndpoint(), parent);
+			return new SliderWidget(getSharedScalarEndpoint(), parent);
 		}break;
 		default:
 			throw InvalidStateDetectedException("invalid range type");

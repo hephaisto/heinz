@@ -1,8 +1,8 @@
 #include <Wt/WContainerWidget>
 #include <Wt/WPushButton>
-#include "ScalarEndpoint.hpp"
+#include "../ScalarEndpoint.hpp"
 #include "EndpointWidget.hpp"
-#include "common.hpp"
+#include "../common.hpp"
 
 /** @todo (hephaisto#1#): Add thread synchronization to widgets (Wt-threads AND heinz-threads access this class!) */
 
@@ -10,11 +10,11 @@
 namespace heinz
 {
 
-class EndpointOnOffButtonWidget : public EndpointWidget, public ScalarEndpoint::ObservingWidget
+class OnOffButtonWidget : public EndpointWidget, public ScalarEndpoint::ObservingWidget
 {
 public:
-	EndpointOnOffButtonWidget(shared_ptr<ScalarEndpoint> endpoint, Wt::WContainerWidget *parent=NULL);
-	virtual ~EndpointOnOffButtonWidget();
+	OnOffButtonWidget(shared_ptr<ScalarEndpoint> endpoint, Wt::WContainerWidget *parent=NULL);
+	virtual ~OnOffButtonWidget();
 	void btnOnClicked();
 	void btnOffClicked();
 	virtual void internalUpdate();
