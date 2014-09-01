@@ -32,7 +32,19 @@ invert(pt.get<bool>("invert",false))
 			throw HeinzException("unable to initialize wiringPi");
 		initialized=true;
 	}
+	string pull_mode_s=pt.get<string>("pull","off");
+	int pull_mode=PUD_OFF;
+	if(pull_mode_s=="off")
+		pull_mode=PUD_OFF;
+	else if(pull_mode_s=="up")
+		pull_mode=PUD_UP;
+	else if(pull_mode_s=="down")
+		pull_mode=PUD_DOWN;
+	else
+		throw ConfigException((boost::format("unknown pull mode: %1%")%pull_mode_s).str());
 	pinMode(pinNumber,getIsInput()?INPUT:OUTPUT);
+	if(getIsInput())
+		pullUpDnControl(pinNumber, pull_mode);
 }
 
 void EndpointRaspberry::setValue(int64_t value)
@@ -61,7 +73,12 @@ bool EndpointRaspberry::updatesAvailable()
 {
 	if(!input)
 		return false;
-	// TODO: check for updates
+	bool v=digitalRead(pinNumber)==HIGH;
+	if((cachedValue==1)!=v)
+	{
+		cachedValue=v?1:0;
+		return true;
+	}
 	return false;
 }
 void EndpointRaspberry::postUpdates()
