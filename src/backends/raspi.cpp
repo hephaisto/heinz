@@ -57,7 +57,7 @@ void EndpointRaspberry::poll()
 		setCachedValue(digitalRead(pinNumber)==HIGH?1:0);
 }
 
-void EndpointRaspberry::updatesAvailable()
+bool EndpointRaspberry::updatesAvailable()
 {
 	if(!input)
 		return false;

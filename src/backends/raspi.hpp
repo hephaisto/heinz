@@ -15,7 +15,7 @@ public:
 	virtual bool isValid();
 
 	// inherited from PollingObject
-	virtual void updatesAvailable();
+	virtual bool updatesAvailable();
 	virtual void postUpdates();
 private:
 	static bool initialized;
