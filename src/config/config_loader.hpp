@@ -15,6 +15,7 @@ namespace heinz
 struct Config
 {
 	map<string,shared_ptr<Endpoint> > endpoints;
+	vector<shared_ptr<PollingObject> > pollingObjects;
 	map<string, map<string,vector<shared_ptr<Endpoint> > > > groups;
 };
 

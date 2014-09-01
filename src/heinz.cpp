@@ -16,7 +16,7 @@ void Heinz::pollingLoop()
 {
 	while(true)
 	{
-		BOOST_FOREACH(shared_ptr<PollingObject> p,pollingObjects)
+		BOOST_FOREACH(shared_ptr<PollingObject> p,config->pollingObjects)
 		{
 			if(p->updatesAvailable())
 				std::cerr<<"updates available! - post to thread pool here";	// TODO

@@ -17,7 +17,6 @@ public:
 private:
 	WebApp* createApp(const Wt::WEnvironment &env);
 	shared_ptr<Config> config;
-	vector<shared_ptr<PollingObject> > pollingObjects;
 	void pollingLoop();
 	boost::thread pollingThread;
 };

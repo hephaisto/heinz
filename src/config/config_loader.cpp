@@ -62,7 +62,10 @@ shared_ptr<Config> load_config(const string &filename)
 			else if(type=="raspi")
 			{
 				#ifdef HAS_WIRINGPI
-				ptr=make_shared<EndpointRaspberry>(v.second);
+				shared_ptr<EndpointRaspberry> tmp=make_shared<EndpointRaspberry>(v.second);
+				ptr=tmp;
+				if(tmp.getIsInput())
+					PollingObjects.push_back(tmp);
 				#else
 				throw HeinzException("This version has been built without support for wiringPi!");
 				#endif
