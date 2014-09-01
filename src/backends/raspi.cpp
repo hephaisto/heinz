@@ -1,4 +1,6 @@
 #include <boost/log/trivial.hpp>
+#include <boost/format.hpp>
+
 #include <wiringPi.h>
 #include "raspi.hpp"
 #include "../exceptions.hpp"
@@ -61,12 +63,6 @@ void EndpointRaspberry::setValue(int64_t value)
 bool EndpointRaspberry::isValid()
 {
 	return true;
-}
-
-void EndpointRaspberry::poll()
-{
-	if(getIsInput())
-		setCachedValue(digitalRead(pinNumber)==HIGH?1:0);
 }
 
 bool EndpointRaspberry::updatesAvailable()
