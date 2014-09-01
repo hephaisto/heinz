@@ -64,7 +64,7 @@ shared_ptr<Config> load_config(const string &filename)
 				#ifdef HAS_WIRINGPI
 				shared_ptr<EndpointRaspberry> tmp=make_shared<EndpointRaspberry>(v.second);
 				ptr=tmp;
-				if(tmp.getIsInput())
+				if(tmp->getIsInput())
 					PollingObjects.push_back(tmp);
 				#else
 				throw HeinzException("This version has been built without support for wiringPi!");
