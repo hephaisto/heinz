@@ -189,7 +189,7 @@ ScalarEndpoint::Observer::~Observer()
 
 void ScalarEndpoint::ObservingWidget::update()
 {
-	if(sessionID==Wt::WApplication::instance()->sessionId())
+	if((Wt::WApplication::instance()) && (sessionID==Wt::WApplication::instance()->sessionId()) )
 		internalUpdate();
 	else
 		Wt::WServer::instance()->post(sessionID, boost::bind(&ScalarEndpoint::ObservingWidget::internalUpdate,this));
