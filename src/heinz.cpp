@@ -25,7 +25,7 @@ void Heinz::pollingLoop()
 				//std::cerr<<"updates available! - post to thread pool here";	// TODO
 			}
 		}
-		boost::this_thread::sleep_for(boost::chrono::milliseconds(100));	// wait, allow interrupting
+		boost::this_thread::sleep_for(boost::chrono::milliseconds(config->pollingInterval));	// wait, allow interrupting
 	}
 }
 WebApp* Heinz::createApp(const Wt::WEnvironment &env)

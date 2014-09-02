@@ -17,6 +17,7 @@ struct Config
 	map<string,shared_ptr<Endpoint> > endpoints;
 	vector<shared_ptr<PollingObject> > pollingObjects;
 	map<string, map<string,vector<shared_ptr<Endpoint> > > > groups;
+	uint64_t pollingInterval;
 };
 
 shared_ptr<Config> load_config(const string &filename);

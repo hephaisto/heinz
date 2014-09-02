@@ -112,6 +112,7 @@ shared_ptr<Config> load_config(const string &filename)
 		}
 		config->groups.insert(std::make_pair(supername,supergrp));
 	}
+	config->pollingInterval=pt.get<uint64_t>("polling_interval",5000);
 
 	return config;
 }
