@@ -17,6 +17,11 @@ else:
 
 env=conf.Finish()
 
+import distutils.sysconfig
+env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])
+pythonlib="python"+distutils.sysconfig.get_config_var("VERSION")
+#print(pythonlib)
+#env.Append(LIBS=pythonlib)
 
 env.Append(CCFLAGS="-std=c++11")
 env.Append(CCFLAGS="-DBOOST_ALL_DYN_LINK")
@@ -30,10 +35,13 @@ libs=[
 "pthread",
 "wt",
 "wthttp",
-"boost_signals"
-]
+"boost_signals",
+"boost_python"
+]+[pythonlib]
 
 sources_widgets=Glob("widgets/*.cpp")
+sources_python=Glob("python/*.cpp")
+
 sources_daemon=[
 "constants.cpp",
 "Endpoint.cpp",
@@ -47,7 +55,7 @@ sources_daemon=[
 "WebApp.cpp",
 "config/config_loader.cpp",
 "MultiplexerEndpoint.cpp"
-]+sources_widgets
+]+sources_widgets+sources_python
 
 
 sources_raspi=[

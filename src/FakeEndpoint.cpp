@@ -47,7 +47,8 @@ bool FakeEndpoint::updatesAvailable()
 }
 void FakeEndpoint::postUpdates()
 {
-	this->triggerUpdates();
+	triggerUpdates();
+	executeScript();
 }
 
 }

@@ -21,9 +21,19 @@
 namespace heinz
 {
 
+using boost::property_tree::ptree;
+void addScriptIfAvailable(shared_ptr<PollingObject> object, ptree &pt)
+{
+	try
+	{
+		object->setScript(pt.get<string>("update_command"));
+	}
+	catch(...)
+	{}
+}
+
 shared_ptr<Config> load_config(const string &filename)
 {
-	using boost::property_tree::ptree;
 	ptree pt;
 	try
 	{
@@ -54,7 +64,10 @@ shared_ptr<Config> load_config(const string &filename)
 				shared_ptr<FakeEndpoint> tmp=make_shared<FakeEndpoint>(v.second);
 				ptr=tmp;
 				if(tmp->getIsInput())
+				{
 					config->pollingObjects.push_back(tmp);
+					addScriptIfAvailable(tmp,v.second);
+				}
 			}
 			// multiplexer endpoint
 			else if(type=="multiplex")
@@ -68,7 +81,10 @@ shared_ptr<Config> load_config(const string &filename)
 				shared_ptr<EndpointRaspberry> tmp=make_shared<EndpointRaspberry>(v.second);
 				ptr=tmp;
 				if(tmp->getIsInput())
+				{
 					config->pollingObjects.push_back(tmp);
+					addScriptIfAvailable(tmp,v.second);
+				}
 				#else
 				throw HeinzException("This version has been built without support for wiringPi!");
 				#endif

@@ -79,7 +79,8 @@ bool EndpointRaspberry::updatesAvailable()
 }
 void EndpointRaspberry::postUpdates()
 {
-	this->triggerUpdates();
+	triggerUpdates();
+	executeScript();
 }
 
 /*
