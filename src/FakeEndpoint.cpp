@@ -28,4 +28,26 @@ bool FakeEndpoint::isValid()
 	return true;
 }
 
+bool FakeEndpoint::updatesAvailable()
+{
+	if(!getIsInput())
+		return false;
+	switch(rangeType)
+	{
+	case RANGE_U1:
+		cachedValue=cachedValue?0:1;
+		break;
+	case RANGE_U8:
+		cachedValue=cachedValue==255?0:cachedValue+1;
+		break;
+	default:
+		break;
+	}
+	return true;
+}
+void FakeEndpoint::postUpdates()
+{
+	this->triggerUpdates();
+}
+
 }

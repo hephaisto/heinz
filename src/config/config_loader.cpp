@@ -51,7 +51,10 @@ shared_ptr<Config> load_config(const string &filename)
 			// fake endpoint
 			if(type=="fake")
 			{
-				ptr=make_shared<FakeEndpoint>(v.second);
+				shared_ptr<FakeEndpoint> tmp=make_shared<FakeEndpoint>(v.second);
+				ptr=tmp;
+				if(tmp->getIsInput())
+					config->pollingObjects.push_back(tmp);
 			}
 			// multiplexer endpoint
 			else if(type=="multiplex")

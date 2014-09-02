@@ -9,13 +9,16 @@ namespace heinz
 /**
 A fake endpoint class which just prints status changes to the log.
 **/
-class FakeEndpoint : public HardwareEndpoint
+class FakeEndpoint : public HardwareEndpoint, public PollingObject
 {
 public:
 	FakeEndpoint(string description, EnRangeType rangeType,bool isInput);
 	FakeEndpoint(ptree &pt);
 	virtual void setValue(int64_t value);
 	virtual bool isValid();
+	// inherited from PollingObject
+	virtual bool updatesAvailable();
+	virtual void postUpdates();
 };
 
 }
