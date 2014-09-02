@@ -70,7 +70,6 @@ bool EndpointRaspberry::updatesAvailable()
 	if(!getIsInput())
 		return false;
 	bool v=digitalRead(pinNumber)==HIGH;
-	std::cerr<<v?1:0;
 	if((cachedValue==1)!=v)
 	{
 		cachedValue=v?1:0;
