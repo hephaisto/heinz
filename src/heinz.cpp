@@ -1,5 +1,6 @@
 #include "heinz.hpp"
-
+#include <Wt/WServer>
+#include <Wt/WIOService>
 #include <boost/foreach.hpp>
 #include <boost/thread/thread.hpp>
 
@@ -19,7 +20,10 @@ void Heinz::pollingLoop()
 		BOOST_FOREACH(shared_ptr<PollingObject> p,config->pollingObjects)
 		{
 			if(p->updatesAvailable())
-				std::cerr<<"updates available! - post to thread pool here";	// TODO
+			{
+				Wt::WServer::instance()->ioService().post(boost::bind(&PollingObject::postUpdates, p.get()));
+				//std::cerr<<"updates available! - post to thread pool here";	// TODO
+			}
 		}
 		boost::this_thread::sleep_for(boost::chrono::milliseconds(100));	// wait, allow interrupting
 	}
