@@ -1,12 +1,12 @@
 env=Environment()
 conf=Configure(env)
 
-
+# DEBUGGING
 debug=ARGUMENTS.get("debug",0)
 if int(debug):
 	env.Append(CCFLAGS="-g")
 
-
+# RASPBERRY PI
 raspi=ARGUMENTS.get("raspi",0)
 if conf.CheckCHeader("wiringPi.h"):
 	wiringpi=True
@@ -17,12 +17,15 @@ else:
 
 env=conf.Finish()
 
+# PYTHON
 import distutils.sysconfig
 env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])
 pythonlib="python"+distutils.sysconfig.get_config_var("VERSION")
 #print(pythonlib)
 #env.Append(LIBS=pythonlib)
 
+
+# flags
 env.Append(CCFLAGS="-std=c++11")
 env.Append(CCFLAGS="-DBOOST_ALL_DYN_LINK")
 
