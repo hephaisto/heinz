@@ -2,6 +2,7 @@
 #include <boost/property_tree/info_parser.hpp>
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
+#include <boost/filesystem.hpp>
 
 #include <iostream>
 
@@ -22,6 +23,8 @@ namespace heinz
 {
 
 using boost::property_tree::ptree;
+namespace bfs=boost::filesystem;
+
 void addScriptIfAvailable(shared_ptr<PollingObject> object, ptree &pt)
 {
 	try
@@ -32,17 +35,31 @@ void addScriptIfAvailable(shared_ptr<PollingObject> object, ptree &pt)
 	{}
 }
 
-shared_ptr<Config> load_config(const string &filename)
+string getFirstExistentFile(vector<string> files)
+{
+	BOOST_FOREACH(auto f,files)
+	{
+		bfs::path p(f);
+		if(bfs::exists(p))
+			return f;
+	}
+	throw ConfigException("unable to load config file (no suitable config file found)");
+}
+
+shared_ptr<Config> load_config()
 {
 	ptree pt;
+
+	string configFile=getFirstExistentFile({"heinz.conf","config/heinz.conf","/etc/heinz/heinz.conf"});
 	try
 	{
-		read_info(filename,pt);
+		read_info(configFile,pt);
 	}
 	catch(std::exception &e)
 	{
-		throw ConfigException((boost::format("unable to load config file: %1%") % e.what()).str());
+		throw ConfigException((boost::format("unable to load config from %2%: %1%") % e.what() % configFile).str());
 	}
+
 	shared_ptr<Config> config=make_shared<Config>();
 
 	// ENDPOINTS
@@ -129,6 +146,7 @@ shared_ptr<Config> load_config(const string &filename)
 		config->groups.insert(std::make_pair(supername,supergrp));
 	}
 	config->pollingInterval=pt.get<uint64_t>("polling_interval",5000);
+	config->wtConfigFile=pt.get<string>("wt_config","http_config");
 
 	return config;
 }

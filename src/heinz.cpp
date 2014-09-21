@@ -40,8 +40,8 @@ boost::function<WebApp* (const Wt::WEnvironment &env)> Heinz::getAppCreator()
 {
 	return boost::bind(&Heinz::createApp,this,_1);
 }
-Heinz::Heinz(string configFilename)
-:config(load_config(configFilename))
+Heinz::Heinz()
+:config(load_config())
 {
 	if(singletonInstance)
 		throw HeinzException("There is already a heinz instance!");

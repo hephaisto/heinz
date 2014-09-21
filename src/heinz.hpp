@@ -13,7 +13,7 @@ namespace heinz
 class Heinz : public std::enable_shared_from_this<Heinz>, public boost::shared_lockable_adapter<boost::shared_mutex>
 {
 public:
-	Heinz(string configFilename);
+	Heinz();
 	virtual ~Heinz();
 	shared_ptr<Config> getConfig();
 	boost::function<WebApp* (const Wt::WEnvironment &env)> getAppCreator();
