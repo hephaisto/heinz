@@ -44,13 +44,13 @@ MultiplexerEndpoint::MultiplexerEndpoint(ptree &pt, shared_ptr<Config> config)
 
 			shared_ptr<ScalarEndpoint> sub_endpoint_scalar(std::dynamic_pointer_cast<ScalarEndpoint>(subEndpoint));
 			if(sub_endpoint_scalar==nullptr)
-				throw ConfigException((boost::format("endpoint %1% is not scalar") % sub_name).str());
+				throw ConfigException()<<ExErrorMessage((boost::format("endpoint %1% is not scalar") % sub_name).str());
 
 			addSubEndpoint(sub_name,sub_endpoint_scalar);
 		}
 		catch(std::out_of_range &e)
 		{
-			throw ConfigException((boost::format("endpoint %1% not found") % sub_name).str());
+			throw ConfigException()<<ExErrorMessage((boost::format("endpoint %1% not found") % sub_name).str());
 		}
 	}
 }
@@ -58,11 +58,11 @@ MultiplexerEndpoint::MultiplexerEndpoint(ptree &pt, shared_ptr<Config> config)
 void MultiplexerEndpoint::addSubEndpoint(string sub_name, shared_ptr<ScalarEndpoint> subEndpoint)
 {
 	if(subEndpoint->getIsInput())
-		throw ConfigException((boost::format("endpoint %1% is an input-endpoint") % sub_name).str());
+		throw ConfigException()<<ExErrorMessage((boost::format("endpoint %1% is an input-endpoint") % sub_name).str());
 
 
 	if(subEndpoint->getRange()!=rangeType)
-		throw ConfigException((boost::format("endpoint %1% has not the same range as the multiplexer endpoint") % sub_name).str());
+		throw ConfigException()<<ExErrorMessage((boost::format("endpoint %1% has not the same range as the multiplexer endpoint") % sub_name).str());
 
 	endpoints.push_back(subEndpoint);
 	signalConnections.push_back(subEndpoint->getUpdateSignal().connect(boost::bind(&MultiplexerEndpoint::internalUpdate,this)));

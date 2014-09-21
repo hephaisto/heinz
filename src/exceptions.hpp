@@ -2,6 +2,7 @@
 #define HEINZ_EXCEPTIONS_H
 
 #include <exception>
+#include <boost/exception/all.hpp>
 #include <string>
 using std::string;
 
@@ -15,6 +16,8 @@ namespace heinz
 @addtogroup exceptions
 @{
 **/
+
+typedef boost::error_info<struct tagErrorMessage,string> ExErrorMessage;
 
 /**
 Base class for all exceptions that are thrown in Heinz.
@@ -75,14 +78,18 @@ public:
 	InputEndpointValueSetException();
 };
 
+
+typedef boost::error_info<struct tagConfigFilename,string> ExConfigFilename;
 /**
 Errors in config file
 **/
-class ConfigException : public HeinzException
+struct ConfigException : virtual boost::exception, virtual std::exception {};
+/*class ConfigException : virtual boost::exception, public HeinzException
 {
 public:
 	ConfigException(string text);
-};
+	virtual const char* what() const noexcept;
+};*/
 
 }
 

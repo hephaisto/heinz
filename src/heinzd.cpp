@@ -10,9 +10,14 @@ int main(int argc, char** argv)
 	{
 		heinz=std::make_shared<Heinz>();
 	}
+	catch(boost::exception &e)
+	{
+		std::cerr<<"error: "<<boost::diagnostic_information(e,false);
+		return 1;
+	}
 	catch(std::exception &e)
 	{
-		std::cerr<<"Caught exception while starting heinz: "<<e.what()<<"\n";
+		std::cerr<<"error: "<<e.what()<<"\n";
 		return 1;
 	}
 
@@ -31,6 +36,11 @@ int main(int argc, char** argv)
 			//if(sig==Wt::WServer::SIGHUP)
 			//	;	// TODO: reload
 		}
+	}
+	catch(boost::exception &e)
+	{
+		std::cerr<<"error: "<<boost::diagnostic_information(e);
+		return 1;
 	}
 	catch(std::exception &e)
 	{
