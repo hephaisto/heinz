@@ -69,9 +69,12 @@ if wiringpi:
     sources_daemon+=sources_raspi
     libs+=libs_raspi
 
-configfile=env.Command("config/heinz.conf","../config/example.conf",Copy("$TARGET", "$SOURCE"))
+configfile=env.Command("heinz.conf","../config/example.conf",Copy("$TARGET", "$SOURCE"))
 example=env.Alias("example",configfile)
 
 heinzd=env.Program(target="heinzd",source=sources_daemon,LIBS=libs)
+
+install_bin=env.Install("/usr/bin",heinzd)
+env.Alias("install",[install_bin])
 
 Default(heinzd)
