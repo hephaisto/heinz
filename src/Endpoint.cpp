@@ -22,5 +22,14 @@ void PollingObject::setScript(string command)
 {
 	this->command=command;
 }
+void PollingObject::setScriptIfAvailable(ptree &pt)
+{
+	try
+	{
+		setScript(pt.get<string>("update_command"));
+	}
+	catch(...)
+	{}
+}
 
 }

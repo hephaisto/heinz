@@ -26,7 +26,7 @@ MultiplexerEndpoint::~MultiplexerEndpoint()
 		p.disconnect();
 }
 
-shared_ptr<MultiplexerEndpoint> MultiplexerEndpoint::createMultiplexerEndpoint(ptree &pt, shared_ptr<Config> config)
+shared_ptr<Endpoint> MultiplexerEndpoint::create(shared_ptr<Config> config, ptree &pt)
 {
 	shared_ptr<MultiplexerEndpoint> ptr(new MultiplexerEndpoint(pt,config));
 	return ptr;

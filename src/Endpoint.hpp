@@ -11,6 +11,14 @@ using std::string;
 
 namespace heinz
 {
+class Endpoint;
+class PollingObject;
+}
+
+#include "config/config_loader.hpp"
+
+namespace heinz
+{
 namespace bs2=boost::signals2;
 
 
@@ -65,6 +73,7 @@ public:
 	virtual void postUpdates()=0;
 	void executeScript();
 	void setScript(string command);
+	void setScriptIfAvailable(ptree &pt);
 private:
 	string command;
 };

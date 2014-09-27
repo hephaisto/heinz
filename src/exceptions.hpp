@@ -80,6 +80,7 @@ public:
 
 
 typedef boost::error_info<struct tagConfigFilename,string> ExConfigFilename;
+typedef boost::error_info<struct tagEndpointName,string> ExEndpointName;
 /**
 Errors in config file
 **/

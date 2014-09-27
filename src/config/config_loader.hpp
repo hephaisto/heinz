@@ -7,6 +7,10 @@ using std::string;
 #include <map>
 using std::map;
 
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/info_parser.hpp>
+using boost::property_tree::ptree;
+
 #include "../Endpoint.hpp"
 
 namespace heinz

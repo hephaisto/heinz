@@ -1,5 +1,4 @@
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/info_parser.hpp>
+
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/filesystem.hpp>
@@ -22,18 +21,38 @@
 namespace heinz
 {
 
-using boost::property_tree::ptree;
 namespace bfs=boost::filesystem;
 
-void addScriptIfAvailable(shared_ptr<PollingObject> object, ptree &pt)
+typedef shared_ptr<Endpoint> (*EndpointCreator)(shared_ptr<Config>,ptree &pt);
+map<string,EndpointCreator > endpointCreators={
+	{"fake",&FakeEndpoint::create}
+	#ifdef HAS_WIRINGPI
+	,{"raspi",EndpointRaspberry::create}
+	#else
+	,{"raspi",(EndpointCreator)NULL}
+	#endif // HAS_WIRINGPI
+	,{"multiplex",&MultiplexerEndpoint::create}
+};
+
+
+shared_ptr<Endpoint> createEndpoint(shared_ptr<Config> config, ptree &pt)
 {
 	try
 	{
-		object->setScript(pt.get<string>("update_command"));
+		auto creator=endpointCreators.at(pt.data());
+		if(creator)
+		{
+			return creator(config,pt);
+		}
+		else
+			BOOST_THROW_EXCEPTION(ConfigException()<<ExErrorMessage((boost::format("This version has been built without support for endpoints of type %1%") % pt.data()).str()));
 	}
-	catch(...)
-	{}
+	catch(std::out_of_range &e)
+	{
+		BOOST_THROW_EXCEPTION(ConfigException()<<ExErrorMessage((boost::format("%1% is not a valid endpoint type") % pt.data()).str()));
+	}
 }
+
 
 string getFirstExistentFile(vector<string> files)
 {
@@ -68,55 +87,15 @@ shared_ptr<Config> load_config()
 		BOOST_FOREACH( ptree::value_type &v, pt.get_child("endpoints") )
 		{
 			string name=v.first.data();
-			string type=v.second.data();
-
-			string description=v.second.get<string>("description","");
-
-			//string desc=v.second.get<string>("description");
-			shared_ptr<Endpoint> ptr(nullptr);
-
-			// fake endpoint
-			if(type=="fake")
+			try
 			{
-				shared_ptr<FakeEndpoint> tmp=make_shared<FakeEndpoint>(v.second);
-				ptr=tmp;
-				if(tmp->getIsInput())
-				{
-					config->pollingObjects.push_back(tmp);
-					addScriptIfAvailable(tmp,v.second);
-				}
+				config->endpoints.insert(std::make_pair(name,createEndpoint(config, v.second)));
 			}
-			// multiplexer endpoint
-			else if(type=="multiplex")
+			catch(boost::exception &e)
 			{
-				ptr=MultiplexerEndpoint::createMultiplexerEndpoint(v.second,config);
+				e<<ExEndpointName(name);
+				throw;
 			}
-			// raspi
-			else if(type=="raspi")
-			{
-				#ifdef HAS_WIRINGPI
-				shared_ptr<EndpointRaspberry> tmp=make_shared<EndpointRaspberry>(v.second);
-				ptr=tmp;
-				if(tmp->getIsInput())
-				{
-					config->pollingObjects.push_back(tmp);
-					addScriptIfAvailable(tmp,v.second);
-				}
-				#else
-				throw HeinzException("This version has been built without support for wiringPi!");
-				#endif
-			}
-			// no matching endpoint type found
-			else
-				BOOST_THROW_EXCEPTION(ConfigException()<<ExErrorMessage((boost::format("unknown endpoint type: %1%") % type).str()));
-			config->endpoints.insert(std::make_pair(name,ptr));
-
-			/*catch(std::exception &e)
-			{
-				BOOST_THROW_EXCEPTION(ConfigException()<<ExErrorMessage((boost::format("error while parsing endpoint %1%: %2%") % name % e.what()).str()));
-			}*/
-			//shared_ptr<Endpoint>(new )
-			//endpoints.insert(v.second.data());
 		}
 
 		// GROUPS

@@ -2,6 +2,7 @@
 #define FAKE_ENDPOINT_H
 
 #include "HardwareEndpoint.hpp"
+#include "config/config_loader.hpp"
 
 namespace heinz
 {
@@ -19,6 +20,7 @@ public:
 	// inherited from PollingObject
 	virtual bool updatesAvailable();
 	virtual void postUpdates();
+	static shared_ptr<Endpoint> create(shared_ptr<Config> config, ptree &pt);
 };
 
 }

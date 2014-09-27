@@ -51,4 +51,16 @@ void FakeEndpoint::postUpdates()
 	executeScript();
 }
 
+shared_ptr<Endpoint> FakeEndpoint::create(shared_ptr<Config> config, ptree &pt)
+{
+	shared_ptr<FakeEndpoint> tmp=make_shared<FakeEndpoint>(pt);
+	if(tmp->getIsInput())
+	{
+		shared_ptr<PollingObject> po=tmp;
+		config->pollingObjects.push_back(po);
+		tmp->setScriptIfAvailable(pt);
+	}
+	return tmp;
+}
+
 }

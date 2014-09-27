@@ -79,5 +79,15 @@ void EndpointRaspberry::postUpdates()
 	triggerUpdates();
 	executeScript();
 }
+shared_ptr<EndpointRaspberry> create(shared_ptr<Config> config, ptree &pt)
+{
+	shared_ptr<EndpointRaspberry> tmp=make_shared<EndpointRaspberry>(pt);
+	if(tmp->getIsInput())
+	{
+		config->pollingObjects.push_back(tmp);
+		tmp->setScriptIfAvailable(pt);
+	}
+	return tmp;
+}
 
 }	// namespace

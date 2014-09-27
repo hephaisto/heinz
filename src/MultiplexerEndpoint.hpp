@@ -9,7 +9,7 @@ class MultiplexerEndpoint;
 class MultiplexerEndpoint : public ScalarEndpoint
 {
 public:
-	static shared_ptr<MultiplexerEndpoint> createMultiplexerEndpoint(ptree &pt, shared_ptr<Config> config);
+	static shared_ptr<Endpoint> create(shared_ptr<Config> config, ptree &pt);
 	shared_ptr<MultiplexerEndpoint> getSharedMultiplexerEndpoint();
 	virtual ~MultiplexerEndpoint();
 

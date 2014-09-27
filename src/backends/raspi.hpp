@@ -17,6 +17,7 @@ public:
 	// inherited from PollingObject
 	virtual bool updatesAvailable();
 	virtual void postUpdates();
+	shared_ptr<EndpointRaspberry> create(shared_ptr<Config> config, ptree &pt);
 private:
 	static bool initialized;
 	int pinNumber;
