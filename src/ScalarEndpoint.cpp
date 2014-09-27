@@ -130,43 +130,6 @@ Wt::WContainerWidget* ScalarEndpoint::addEndpointWidgetToContainer(Wt::WContaine
 		default:
 			throw InvalidStateDetectedException("invalid range type");
 	}
-
-	/// @todo create widget
-	/*
-	switch(rangeType)
-	{
-	case RANGE_U1:
-	{
-		Wt::WPushButton *btn=new Wt::WPushButton("switch",w);
-		btn->setCheckable(true);
-		btn->setChecked(cachedValue);
-		btn->clicked().connect(boost::bind(&ScalarEndpoint::webButtonClicked, this, btn));
-	}break;
-	case RANGE_U8:
-	{
-		Wt::WSlider *slider=new Wt::WSlider(Wt::Horizontal,w);
-		slider->setRange(0,255);
-		slider->setValue(cachedValue);
-		slider->valueChanged().connect(boost::bind(&ScalarEndpoint::webSliderUpdated, this, slider));
-		//slider->resize(300, 50);
-		//slider->setTickInterval(5);
-		//slider->setTickPosition(Wt::WSlider::TicksBothSides);
-		//scaleSlider->valueChanged().connect(this, &ThisClass::scaleShape);
-		//slider->setNativeControl(true);
-	}break;
-	case RANGE_S8:
-	{
-		Wt::WSlider *slider=new Wt::WSlider(Wt::Horizontal,w);
-		slider->setRange(-128,127);
-		slider->setValue(cachedValue);
-		slider->resize(300, 50);
-		slider->setNativeControl(true);
-	}break;
-	default:
-		throw InvalidStateDetectedException("invalid range type");
-	}
-
-	return w;*/
 }
 void ScalarEndpoint::triggerUpdates()
 {

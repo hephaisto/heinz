@@ -8,6 +8,9 @@ using std::vector;
 namespace heinz
 {
 
+/**
+Widget that holds a list of endpoint widgets.
+**/
 class EndpointListWidget : public Wt::WContainerWidget
 {
 public:

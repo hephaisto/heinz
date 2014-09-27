@@ -8,6 +8,8 @@ namespace heinz
 
 /**
 Base class for all endpoints which actually have a hardware equivalent (opposed to virtual endpoints, which don't).
+
+Hardware endpoints are always scalar. More complicated endpoints are virtual endpoints with multiple hardware endpoints assigned.
 **/
 class HardwareEndpoint : public ScalarEndpoint
 {

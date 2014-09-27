@@ -45,12 +45,17 @@ public:
 	@returns A pointer to the newly created widget.
 	**/
 	virtual Wt::WContainerWidget* addEndpointWidgetToContainer(Wt::WContainerWidget *parent)=0;
+
 	/**
 	Checks whether this endpoint has a valid status which can be read out.
 
-	Examples for an invalid status: A multiplexer Endpoint with one on-endpoint und one off-endpoint.
+	Examples for an invalid status: A multiplexer Endpoint with one on-endpoint and one off-endpoint.
 	**/
 	virtual bool isValid()=0;
+
+	/**
+	Get description string specified in config file.
+	**/
 	string getDescription();
 protected:
 	string description;
@@ -71,8 +76,15 @@ public:
 	This will be run from one of the threads in the worker pool, since duration of the invocation can possibly be very long.
 	**/
 	virtual void postUpdates()=0;
+
+	/**
+	Execute the script assigned to this object (if existent).
+	**/
 	void executeScript();
-	void setScript(string command);
+
+	/**
+	Assign script to this PollingObject given by update_script defined in the given config ptree.
+	**/
 	void setScriptIfAvailable(ptree &pt);
 private:
 	string command;

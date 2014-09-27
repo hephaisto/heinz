@@ -18,15 +18,11 @@ void PollingObject::executeScript()
 {
 	runUpdateCommand(command);
 }
-void PollingObject::setScript(string command)
-{
-	this->command=command;
-}
 void PollingObject::setScriptIfAvailable(ptree &pt)
 {
 	try
 	{
-		setScript(pt.get<string>("update_command"));
+		command=pt.get<string>("update_command");
 	}
 	catch(...)
 	{}
