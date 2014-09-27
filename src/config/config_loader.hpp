@@ -19,6 +19,7 @@ struct Config
 	map<string, map<string,vector<shared_ptr<Endpoint> > > > groups;
 	uint64_t pollingInterval;
 	string wtConfigFile;
+	int logLevel;
 };
 
 shared_ptr<Config> load_config();

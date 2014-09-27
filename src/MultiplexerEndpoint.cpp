@@ -72,7 +72,6 @@ void MultiplexerEndpoint::setValue(int64_t value)
 {
 	{
 		boost::shared_lock<ScalarEndpoint> guard(*this);
-		std::cerr<<"changing "<<endpoints.size()<<"endpoints by multiplexer\n";
 		for(auto it=endpoints.begin();it!=endpoints.end();it++)
 			(*it)->setValue(value);
 		cachedValue=value;

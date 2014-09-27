@@ -20,7 +20,7 @@ void FakeEndpoint::setValue(int64_t value)
 		this->cachedValue=value;
 	}
 	triggerUpdates();
-	BOOST_LOG_TRIVIAL(info)<<"endpoint set to "<<value;
+	BOOST_LOG_TRIVIAL(info)<<"endpoint "<<getDescription()<<" set to "<<value;
 }
 
 bool FakeEndpoint::isValid()

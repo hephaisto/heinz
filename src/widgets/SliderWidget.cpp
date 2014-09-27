@@ -27,7 +27,6 @@ SliderWidget::~SliderWidget()
 
 void SliderWidget::sliderUpdated(int value)
 {
-	std::cerr<<"slider update received...\n";
 	endpoint->setValue(value);
 }
 

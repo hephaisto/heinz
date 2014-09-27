@@ -170,7 +170,6 @@ Wt::WContainerWidget* ScalarEndpoint::addEndpointWidgetToContainer(Wt::WContaine
 }
 void ScalarEndpoint::triggerUpdates()
 {
-	std::cerr<<description<<": triggerUpdates()\n";
 	boost::shared_lock<ScalarEndpoint> guard(*this);
 	updateSignal();
 }
@@ -201,7 +200,6 @@ sessionID(Wt::WApplication::instance()->sessionId())
 {}
 /*void ScalarEndpointObserver::update()
 {
-	std::cerr<<"updating. this->sessionID="<<sessionID<<"\n";
 	if((sessionID=="") || (Wt::WApplication::instance()->sessionId()==sessionID))	// no sessionID: non-widget observer; same sessionID: no posting necessary
 		internalUpdate();
 	else

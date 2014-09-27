@@ -23,7 +23,7 @@ BOOST_PYTHON_MODULE(Heinz)
 
 void initPython()
 {
-	std::cerr<<"initializing python...\n";
+	BOOST_LOG_TRIVIAL(info)<<"initializing python...";
 	try
 	{
 		PyImport_AppendInittab( "Heinz", initHeinz );
@@ -42,7 +42,7 @@ void initPython()
 
 void runUpdateCommand(string command)
 {
-	std::cerr<<"running command: "<<command<<"\n";
+	BOOST_LOG_TRIVIAL(debug)<<"running command: "<<command;
 	try
 	{
 		object result = exec(str(command), main_namespace, main_namespace);
@@ -68,8 +68,8 @@ void runUpdateCommand(string command)
 		Py_XDECREF(ptype);
 		Py_XDECREF(pvalue);
 		Py_XDECREF(ptraceback);
-		BOOST_LOG_TRIVIAL(error)<<"error: "<<strErrorMessage<<"\n";
-		BOOST_LOG_TRIVIAL(error)<<"in "<<funcname<<"("<<filename<<": "<<lineno<<")\n";
+		BOOST_LOG_TRIVIAL(error)<<"error: "<<strErrorMessage;
+		BOOST_LOG_TRIVIAL(error)<<"in "<<funcname<<"("<<filename<<": "<<lineno<<")";
 	}
 }
 object main_namespace;

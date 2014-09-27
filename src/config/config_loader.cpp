@@ -115,7 +115,6 @@ shared_ptr<Config> load_config()
 			{
 				BOOST_THROW_EXCEPTION(ConfigException()<<ExErrorMessage((boost::format("error while parsing endpoint %1%: %2%") % name % e.what()).str()));
 			}*/
-			//std::cout<<name<<" ("<<v.second.data()<<"): "<<desc<<"\n";
 			//shared_ptr<Endpoint>(new )
 			//endpoints.insert(v.second.data());
 		}
@@ -147,6 +146,9 @@ shared_ptr<Config> load_config()
 		}
 		config->pollingInterval=pt.get<uint64_t>("polling_interval",5000);
 		config->wtConfigFile=pt.get<string>("wt_config","http_config");
+		config->logLevel=pt.get<int>("logging.log_level",3);
+		if((config->logLevel<0)||(config->logLevel>5))
+			BOOST_THROW_EXCEPTION(ConfigException()<<ExErrorMessage((boost::format("log level %1% is invalid (has to be between 0 and 5)") % config->logLevel).str()));
 	}
 	catch(boost::exception &e)
 	{

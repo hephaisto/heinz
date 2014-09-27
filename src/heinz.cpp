@@ -1,3 +1,4 @@
+#include <boost/log/trivial.hpp>
 #include "heinz.hpp"
 #include <Wt/WServer>
 #include <Wt/WIOService>
@@ -18,15 +19,15 @@ shared_ptr<Config> Heinz::getConfig()
 
 void Heinz::pollingLoop()
 {
-	std::cerr<<"starting polling loop\n";
+	BOOST_LOG_TRIVIAL(info)<<"starting polling loop";
 	while(true)
 	{
 		BOOST_FOREACH(shared_ptr<PollingObject> p,config->pollingObjects)
 		{
 			if(p->updatesAvailable())
 			{
+				//BOOST_LOG_TRIVIAL(debug)<<"updates available for endpoint "<<p->getDescription();
 				Wt::WServer::instance()->ioService().post(boost::bind(&PollingObject::postUpdates, p.get()));
-				//std::cerr<<"updates available! - post to thread pool here";	// TODO
 			}
 		}
 		boost::this_thread::sleep_for(boost::chrono::milliseconds(config->pollingInterval));	// wait, allow interrupting
