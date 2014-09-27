@@ -10,18 +10,6 @@ namespace heinz
 
 bool EndpointRaspberry::initialized=false;
 
-EndpointRaspberry::EndpointRaspberry(string description, int pinNumber, bool input)
-:HardwareEndpoint(description, RANGE_U1,input),
-pinNumber(pinNumber)
-{
-	if(!initialized)
-	{
-		if(wiringPiSetup())
-			throw HeinzException("unable to initialize wiringPi");
-		initialized=true;
-	}
-	pinMode(pinNumber,input?INPUT:OUTPUT);
-}
 
 EndpointRaspberry::EndpointRaspberry(ptree &pt)
 :HardwareEndpoint(pt),
@@ -43,10 +31,19 @@ invert(pt.get<bool>("invert",false))
 	else if(pull_mode_s=="down")
 		pull_mode=PUD_DOWN;
 	else
-		throw ConfigException((boost::format("unknown pull mode: %1%")%pull_mode_s).str());
+		BOOST_THROW_EXCEPTION(ConfigException()<<ExErrorMessage((boost::format("unknown pull mode: %1%")%pull_mode_s).str());
+
+	if(allocatedPins.find(pinNumber)!=allocatedPins.end())
+		BOOST_THROW_EXCEPTION(ConfigException()<<ExErrorMessage((boost::format("pin %1% already in use")%pinNumber).str());
+	allocatedPins.insert(pinNumber);
+
 	pinMode(pinNumber,getIsInput()?INPUT:OUTPUT);
 	if(getIsInput())
 		pullUpDnControl(pinNumber, pull_mode);
+}
+EndpointRaspberry::~EndpointRaspberry()
+{
+	allocatedPins.erase(pinNumber);
 }
 
 void EndpointRaspberry::setValue(int64_t value)
