@@ -80,34 +80,4 @@ void EndpointRaspberry::postUpdates()
 	executeScript();
 }
 
-/*
-#ifndef ENABLE_BACKEND_RASPI
-
-extern "C"
-{
-
-void wiringPiSetup()
-{
-	BOOST_LOG_TRIVIAL(info)<<"wiringPiSetup()";
-}
-void pinMode(int pinNumber,int mode)
-{
-	BOOST_LOG_TRIVIAL(info)<<"pinMode("<<pinNumber<<","<<mode<<")";
-}
-void digitalWrite(int pinNumber,int value)
-{
-	BOOST_LOG_TRIVIAL(info)<<"digitalWrite("<<pinNumber<<","<<value<<")";
-}
-int digitalRead(int pinNumber)
-{
-	BOOST_LOG_TRIVIAL(info)<<"digitalRead("<<pinNumber<<")";
-	return 0;
-}
-
-}	// extern "C"
-
-
-#endif // ENABLE_BACKEND_RASPI
-*/
-
 }	// namespace
