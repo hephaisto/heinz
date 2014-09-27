@@ -30,14 +30,14 @@ env.Append(CCFLAGS="-std=c++11")
 env.Append(CCFLAGS="-DBOOST_ALL_DYN_LINK")
 
 libs=[
+"wt",
+"wthttp",
 "boost_system",
 "boost_thread",
 "boost_filesystem",
 "boost_log",
 "boost_log_setup",
 "pthread",
-"wt",
-"wthttp",
 "boost_signals",
 "boost_python"
 ]+[pythonlib]
