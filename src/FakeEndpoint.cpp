@@ -4,10 +4,6 @@
 namespace heinz
 {
 
-FakeEndpoint::FakeEndpoint(string description, EnRangeType rangeType,bool isInput)
-:HardwareEndpoint(description,rangeType,isInput)
-{}
-
 FakeEndpoint::FakeEndpoint(ptree &pt)
 :HardwareEndpoint(pt)
 {}
