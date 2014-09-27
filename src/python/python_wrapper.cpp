@@ -1,3 +1,4 @@
+#include <boost/log/trivial.hpp>
 #include "python_wrapper.hpp"
 #include "../exceptions.hpp"
 
@@ -48,8 +49,27 @@ void runUpdateCommand(string command)
 	}
 	catch( error_already_set )
 	{
-		PyErr_Print();
-		throw HeinzException("error executing python code");
+		PyObject* ptype;
+		PyObject* pvalue;
+		PyObject* ptraceback;
+
+		PyErr_Fetch(&ptype, &pvalue, &ptraceback);
+
+		handle<> hType(ptype);
+		object extype(hType);
+		handle<> hTraceback(ptraceback);
+		object traceback(hTraceback);
+
+		string strErrorMessage = extract<string>(pvalue);
+
+		long lineno = extract<long> (traceback.attr("tb_lineno"));
+		string filename = extract<string>(traceback.attr("tb_frame").attr("f_code").attr("co_filename"));
+		string funcname = extract<string>(traceback.attr("tb_frame").attr("f_code").attr("co_name"));
+		Py_XDECREF(ptype);
+		Py_XDECREF(pvalue);
+		Py_XDECREF(ptraceback);
+		BOOST_LOG_TRIVIAL(error)<<"error: "<<strErrorMessage<<"\n";
+		BOOST_LOG_TRIVIAL(error)<<"in "<<funcname<<"("<<filename<<": "<<lineno<<")\n";
 	}
 }
 object main_namespace;
