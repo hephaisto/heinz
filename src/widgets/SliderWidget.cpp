@@ -13,7 +13,11 @@ endpoint(endpoint)
 	slider=new Wt::WSlider(Wt::Horizontal,widgetContainer);
 	slider->setRange(0,255);
 	slider->setValue(endpoint->getValue());
-	slider->sliderMoved().connect(this,&SliderWidget::sliderUpdated);
+
+	if(!endpoint->getIsInput())
+	{
+		slider->sliderMoved().connect(this,&SliderWidget::sliderUpdated);
+	}
 	//slider->resize(300, 50);
 	//slider->setTickInterval(5);
 	//slider->setTickPosition(Wt::WSlider::TicksBothSides);

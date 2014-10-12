@@ -13,8 +13,11 @@ endpoint(endpoint)
 	btnOn=new Wt::WPushButton("ON",widgetContainer);
 	btnOff=new Wt::WPushButton("OFF",widgetContainer);
 
-	btnOn->clicked().connect(this,&OnOffButtonWidget::btnOnClicked);
-	btnOff->clicked().connect(this,&OnOffButtonWidget::btnOffClicked);
+	if(!endpoint->getIsInput())
+	{
+		btnOn->clicked().connect(this,&OnOffButtonWidget::btnOnClicked);
+		btnOff->clicked().connect(this,&OnOffButtonWidget::btnOffClicked);
+	}
 
 	if(endpoint->isValid())
 	{
