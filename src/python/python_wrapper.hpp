@@ -14,6 +14,7 @@ namespace heinz
 extern object main_namespace;
 void initPython();
 void runUpdateCommand(string command);
+void executeScript(string script);
 
 }
 

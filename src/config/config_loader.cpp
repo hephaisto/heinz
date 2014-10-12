@@ -54,13 +54,13 @@ shared_ptr<Endpoint> createEndpoint(shared_ptr<Config> config, ptree &pt)
 }
 
 
-string getFirstExistentFile(vector<string> files)
+bfs::path getFirstExistentFile(vector<string> files)
 {
 	BOOST_FOREACH(auto f,files)
 	{
 		bfs::path p(f);
 		if(bfs::exists(p))
-			return f;
+			return p;
 	}
 	throw HeinzException("unable to load config file (no suitable config file found)");
 }
@@ -70,7 +70,9 @@ shared_ptr<Config> load_config()
 	ptree pt;
 
 	shared_ptr<Config> config=make_shared<Config>();
-	string configFile=getFirstExistentFile({"heinz.conf","config/heinz.conf","/etc/heinz/heinz.conf"});
+	bfs::path configPath=getFirstExistentFile({"heinz.conf","config/heinz.conf","/etc/heinz/heinz.conf"});
+	string configFile=configPath.string();
+	bfs::path configBase=configPath.parent_path();
 	try
 	{
 		try
@@ -96,6 +98,21 @@ shared_ptr<Config> load_config()
 				e<<ExEndpointName(name);
 				throw;
 			}
+		}
+
+		// SCRIPTFILES
+		BOOST_FOREACH( ptree::value_type &macro, pt.get_child("scripts"))
+		{
+			string name=macro.first.data();
+			config->scriptFiles.push_back((configBase/name).string());
+		}
+
+		// MACROS
+		BOOST_FOREACH( ptree::value_type &macro, pt.get_child("macros"))
+		{
+			string name=macro.first.data();
+			string cmd=macro.second.data();
+			config->macros.insert(std::make_pair(name,cmd));
 		}
 
 		// GROUPS

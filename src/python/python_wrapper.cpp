@@ -11,6 +11,7 @@ BOOST_PYTHON_MODULE(Heinz)
 		.def("getDescription",&ScalarEndpoint::getDescription)
 		.def("switchOnOff",&ScalarEndpoint::switchOnOff)
 		.def("getValue",&ScalarEndpoint::getValue)
+		.def("setValue",&ScalarEndpoint::setValue)
 		;
 
 	class_<Heinz, shared_ptr<Heinz>, boost::noncopyable>("Heinz",no_init)
@@ -65,6 +66,46 @@ void runUpdateCommand(string command)
 		long lineno = extract<long> (traceback.attr("tb_lineno"));
 		string filename = extract<string>(traceback.attr("tb_frame").attr("f_code").attr("co_filename"));
 		string funcname = extract<string>(traceback.attr("tb_frame").attr("f_code").attr("co_name"));
+		Py_XDECREF(ptype);
+		Py_XDECREF(pvalue);
+		Py_XDECREF(ptraceback);
+		BOOST_LOG_TRIVIAL(error)<<"error: "<<strErrorMessage;
+		BOOST_LOG_TRIVIAL(error)<<"in "<<funcname<<"("<<filename<<": "<<lineno<<")";
+	}
+}
+void executeScript(string script)
+{
+	BOOST_LOG_TRIVIAL(info)<<"loading script: "<<script;
+	try
+	{
+		object result = exec_file(str(script), main_namespace, main_namespace);
+	}
+	catch( error_already_set )
+	{
+		PyErr_Print();
+		PyObject* ptype;
+		PyObject* pvalue;
+		PyObject* ptraceback;
+		std::cerr<<"1";
+
+		PyErr_Fetch(&ptype, &pvalue, &ptraceback);
+		std::cerr<<"2";
+
+		handle<> hType(ptype);
+		object extype(hType);
+		handle<> hTraceback(ptraceback);
+		object traceback(hTraceback);
+
+		std::cerr<<"3";
+		string strErrorMessage = extract<string>(pvalue);
+
+		std::cerr<<"4";
+		long lineno = extract<long> (traceback.attr("tb_lineno"));
+		std::cerr<<"5";
+		string filename = extract<string>(traceback.attr("tb_frame").attr("f_code").attr("co_filename"));
+		std::cerr<<"6";
+		string funcname = extract<string>(traceback.attr("tb_frame").attr("f_code").attr("co_name"));
+		std::cerr<<"7";
 		Py_XDECREF(ptype);
 		Py_XDECREF(pvalue);
 		Py_XDECREF(ptraceback);

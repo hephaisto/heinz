@@ -21,6 +21,8 @@ struct Config
 	map<string,shared_ptr<Endpoint> > endpoints;
 	vector<shared_ptr<PollingObject> > pollingObjects;
 	map<string, map<string,vector<shared_ptr<Endpoint> > > > groups;
+	vector<string> scriptFiles;
+	map<string, string> macros;
 	uint64_t pollingInterval;
 	string wtConfigFile;
 	int logLevel;

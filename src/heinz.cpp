@@ -47,6 +47,10 @@ Heinz::Heinz()
 	if(singletonInstance)
 		throw HeinzException("There is already a heinz instance!");
 	initPython();
+	BOOST_FOREACH(string &scriptname, config->scriptFiles)
+	{
+		executeScript(scriptname);
+	}
 	singletonInstance=this;
 	pollingThread=boost::thread(&Heinz::pollingLoop,this);
 }
