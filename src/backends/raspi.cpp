@@ -31,10 +31,10 @@ invert(pt.get<bool>("invert",false))
 	else if(pull_mode_s=="down")
 		pull_mode=PUD_DOWN;
 	else
-		BOOST_THROW_EXCEPTION(ConfigException()<<ExErrorMessage((boost::format("unknown pull mode: %1%")%pull_mode_s).str());
+		BOOST_THROW_EXCEPTION(ConfigException()<<ExErrorMessage((boost::format("unknown pull mode: %1%")%pull_mode_s).str()));
 
 	if(allocatedPins.find(pinNumber)!=allocatedPins.end())
-		BOOST_THROW_EXCEPTION(ConfigException()<<ExErrorMessage((boost::format("pin %1% already in use")%pinNumber).str());
+		BOOST_THROW_EXCEPTION(ConfigException()<<ExErrorMessage((boost::format("pin %1% already in use")%pinNumber).str()));
 	allocatedPins.insert(pinNumber);
 
 	pinMode(pinNumber,getIsInput()?INPUT:OUTPUT);
