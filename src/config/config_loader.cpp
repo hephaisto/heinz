@@ -27,7 +27,7 @@ typedef shared_ptr<Endpoint> (*EndpointCreator)(shared_ptr<Config>,ptree &pt);
 map<string,EndpointCreator > endpointCreators={
 	{"fake",&FakeEndpoint::create}
 	#ifdef HAS_WIRINGPI
-	,{"raspi",EndpointRaspberry::create}
+	,{"raspi",&EndpointRaspberry::create}
 	#else
 	,{"raspi",(EndpointCreator)NULL}
 	#endif // HAS_WIRINGPI
