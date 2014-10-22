@@ -89,5 +89,6 @@ static shared_ptr<Endpoint> create(shared_ptr<Config> config, ptree &pt)
 	}
 	return tmp;
 }
+set<int> EndpointRaspberry::allocatedPins;
 
 }	// namespace
