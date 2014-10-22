@@ -1,6 +1,9 @@
 #ifndef BACKEND_RASPI_H
 #define BACKEND_RASPI_H
 
+#include <set>
+using std::set;
+
 #include "../HardwareEndpoint.hpp"
 
 namespace heinz
