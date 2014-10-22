@@ -79,7 +79,7 @@ void EndpointRaspberry::postUpdates()
 	triggerUpdates();
 	executeScript();
 }
-static shared_ptr<Endpoint> create(shared_ptr<Config> config, ptree &pt)
+static shared_ptr<Endpoint> EndpointRaspberry::create(shared_ptr<Config> config, ptree &pt)
 {
 	shared_ptr<EndpointRaspberry> tmp=make_shared<EndpointRaspberry>(pt);
 	if(tmp->getIsInput())
