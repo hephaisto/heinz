@@ -78,7 +78,14 @@ void executeScript(string script)
 	BOOST_LOG_TRIVIAL(info)<<"loading script: "<<script;
 	try
 	{
+	#define WORKAROUND_DOUBLE_FREE
+	#ifdef WORKAROUND_DOUBLE_FREE
+		std::ifstream in(script);
+		string buf( (std::istreambuf_iterator<char>(in)), (std::istreambuf_iterator<char>()) );
+		object result = exec(str(buf), main_namespace, main_namespace);
+	#else
 		object result = exec_file(str(script), main_namespace, main_namespace);
+	#endif
 	}
 	catch( error_already_set )
 	{
