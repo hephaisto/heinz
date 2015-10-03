@@ -101,9 +101,9 @@ shared_ptr<Config> load_config()
 		}
 
 		// SCRIPTFILES
-		BOOST_FOREACH( ptree::value_type &macro, pt.get_child("scripts"))
+		BOOST_FOREACH( ptree::value_type &script, pt.get_child("scripts"))
 		{
-			string name=macro.first.data();
+			string name=script.first.data();
 			config->scriptFiles.push_back((configBase/name).string());
 		}
 
