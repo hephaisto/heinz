@@ -8,29 +8,17 @@
 int main(int argc, char** argv)
 {
 	using namespace heinz;
-	shared_ptr<Heinz> heinz(nullptr);
 	boost::log::core::get()->set_filter(boost::log::trivial::severity >= boost::log::trivial::info);
 
-	try
-	{
-		heinz=std::make_shared<Heinz>();
-	}
-	catch(boost::exception &e)
-	{
-		BOOST_LOG_TRIVIAL(fatal)<<"error: "<<boost::diagnostic_information(e,false);
-		return 1;
-	}
-	catch(std::exception &e)
-	{
-		BOOST_LOG_TRIVIAL(fatal)<<"error: "<<e.what();
-		return 1;
-	}
-	boost::log::core::get()->set_filter(boost::log::trivial::severity >= heinz->getConfig()->logLevel);
 
 	// run HTTP
 	try
 	{
 		Wt::WServer server("heinz");
+		if(!Wt::WServer::instance())
+			std::cerr<<"WServer::instance is NULL!\n";
+		shared_ptr<Heinz> heinz(new Heinz());
+		boost::log::core::get()->set_filter(boost::log::trivial::severity >= heinz->getConfig()->logLevel);
 		string server_config=heinz->getConfig()->wtConfigFile;
 		BOOST_LOG_TRIVIAL(info)<<"loading config file "<<server_config;
 		server.setServerConfiguration(argc,argv,server_config);
