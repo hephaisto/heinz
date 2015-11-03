@@ -54,6 +54,7 @@ void EndpointRaspberry::setValue(int64_t value)
 		boost::unique_lock<EndpointRaspberry> guard(*this);
 		this->cachedValue=value;
 	}
+	BOOST_LOG_TRIVIAL(info)<<"endpoint "<<getDescription()<<" set to "<<value;
 	triggerUpdates();
 }
 
