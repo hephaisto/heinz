@@ -43,7 +43,11 @@ libs=[
 ]
 libs+=[pythonlib]
 
-sources_widgets=Glob("widgets/*.cpp")
+sources_widgets=[
+"widgets/EndpointWidget.cpp",
+"widgets/OnOffButtonWidget.cpp",
+"widgets/SliderWidget.cpp"
+]
 sources_python=Glob("python/*.cpp")
 
 sources_daemon=[
