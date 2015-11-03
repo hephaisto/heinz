@@ -35,19 +35,26 @@ WebApp::WebApp(const Wt::WEnvironment &env, shared_ptr<Config> config)
 			Wt::WPushButton *btn=new Wt::WPushButton(it.first,macros);
 			btn->clicked().connect(boost::bind(runUpdateCommand,it.second));
 		}
-		mainTabs->addTab(macros,"Macros", Wt::WTabWidget::PreLoading);
+		Wt::WMenuItem* macroItem=mainTabs->addTab(macros,"Macros", Wt::WTabWidget::PreLoading);
+		macroItem->setPathComponent("macros");
 	}
 
 	BOOST_FOREACH(auto supergroup, config->groups)
 	{
 		Wt::WTabWidget *subTabs = new Wt::WTabWidget(NULL);
+		subTabs->setInternalPathEnabled(supergroup.first);
+		//subTabs->setInternalPathEnabled();
 		BOOST_FOREACH(auto group, supergroup.second)
 		{
 			EndpointListWidget *listWidget=new EndpointListWidget(group.second,NULL);
-			subTabs->addTab(listWidget,group.first, Wt::WTabWidget::PreLoading);
+			Wt::WMenuItem* subSubMenu=subTabs->addTab(listWidget,group.first, Wt::WTabWidget::PreLoading);
+			subSubMenu->setPathComponent(group.first);
 		}
-		mainTabs->addTab(subTabs,supergroup.first, Wt::WTabWidget::PreLoading);
+		Wt::WMenuItem* subMenu=mainTabs->addTab(subTabs,supergroup.first, Wt::WTabWidget::PreLoading);
+		subMenu->setPathComponent(supergroup.first);
 	}
+	//mainTabs->setInternalPathEnabled("group");
+	mainTabs->setInternalPathEnabled();
 	mainTabs->addTab(new Wt::WTextArea("Settings"),"Settings", Wt::WTabWidget::PreLoading);
 	mainTabs->setStyleClass("tabwidget");
 
