@@ -16,6 +16,8 @@ class WebApp : public Wt::WApplication
 public:
 	WebApp(const Wt::WEnvironment &env, shared_ptr<Config> config);
 private:
+	void onInternalPathChanged();
+	map<string,std::function<void()> > internalPathCallbacks;
 };
 
 }
