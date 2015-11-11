@@ -172,23 +172,34 @@ sessionID(Wt::WApplication::instance()->sessionId())
 void ScalarEndpoint::switchOnOff()
 {
 	int64_t cv;
+	bool valid;
+
+
 	{
 		boost::shared_lock<ScalarEndpoint> guard(*this);
 		cv=cachedValue;
+		valid=isValid();
 	}
-	switch(this->getRange())
+
+	if(!valid)
+		setValue(0);
+	else
 	{
-	case RANGE_U1:
-		setValue(cv?0:1);
-		break;
-	case RANGE_U8:
-		setValue(cv?0:255);
-		break;
-	case RANGE_S8:
-		setValue(cv>=0?-128:127);
-		break;
-	default:
-		throw HeinzException("switching endpoint of non-compatible type");
+
+		switch(this->getRange())
+		{
+		case RANGE_U1:
+			setValue(cv?0:1);
+			break;
+		case RANGE_U8:
+			setValue(cv?0:255);
+			break;
+		case RANGE_S8:
+			setValue(cv>=0?-128:127);
+			break;
+		default:
+			throw HeinzException("switching endpoint of non-compatible type");
+		}
 	}
 }
 
