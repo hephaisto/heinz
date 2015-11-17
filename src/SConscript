@@ -1,4 +1,4 @@
-env=Environment()
+env=Environment(tools=["default",git_tag_version])
 conf=Configure(env)
 
 # DEBUGGING
