@@ -1,3 +1,5 @@
+import packaging
+
 env=Environment(tools=["default",git_tag_version])
 conf=Configure(env)
 
@@ -10,7 +12,6 @@ if int(debug):
 raspi=ARGUMENTS.get("raspi",0)
 if conf.CheckCHeader("wiringPi.h"):
 	wiringpi=True
-	#env.Append(CCFLAGS="-Ofast -mfpu=vfp -mfloat-abi=hard -march=armv6zk -mtune=arm1176jzf-s")
 	env.Append(CCFLAGS="-DHAS_WIRINGPI")
 else:
 	wiringpi=False
@@ -21,14 +22,14 @@ env=conf.Finish()
 import distutils.sysconfig
 env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])
 pythonlib="python"+distutils.sysconfig.get_config_var("VERSION")
-#print(pythonlib)
-#env.Append(LIBS=pythonlib)
 
 
 # flags
 env.Append(CCFLAGS="-std=c++11")
 env.Append(CCFLAGS="-DBOOST_ALL_DYN_LINK")
 
+
+# LIBS
 libs=[
 "wt",
 "wthttp",
@@ -43,6 +44,8 @@ libs=[
 ]
 libs+=[pythonlib]
 
+
+# SOURCES
 sources_widgets=[
 "widgets/EndpointWidget.cpp",
 "widgets/OnOffButtonWidget.cpp",
@@ -79,12 +82,31 @@ if wiringpi:
     sources_daemon+=sources_raspi
     libs+=libs_raspi
 
-configfile=env.Command("heinz.conf","../config/example.conf",Copy("$TARGET", "$SOURCE"))
-example=env.Alias("example",configfile)
-
+# program
 heinzd=env.Program(target="heinzd",source=sources_daemon,LIBS=libs)
 
-install_bin=env.Install("/usr/bin",heinzd)
-env.Alias("install",[install_bin])
+# config and installation
+config_main=env.Command("heinz.conf","../config/example.conf",Copy("$TARGET", "$SOURCE"))
+config_http=env.Command("http.conf","../config/http.conf",Copy("$TARGET", "$SOURCE"))
+config_service=env.File("../heinz.service")
 
+
+# install bin
+install_bin=env.Install("/usr/bin",heinzd)
+install_systemd_script=Install("/etc/systemd/system",config_service)
+install_config=InstallAs("/etc/heinz/heinz.conf",config_main)
+install_config2=InstallAs("/etc/heinz/http.conf",config_http)
+
+env.Alias("install",[install_bin,install_systemd_script,install_config,install_config2])
+
+# package
+env["TARGET_ARCHITECTURE"]="amd64"
+package=packaging.make_debian("heinz",[
+	(heinzd,"/usr/bin/heinzd"),
+	(config_main,"/etc/heinz/heinz.conf"),
+	(config_http,"/etc/heinz/http.conf"),
+	(config_service,"/etc/systemd/system/heinz.service")
+	],env)
+env.Alias("package",package)
+# default
 Default(heinzd)
