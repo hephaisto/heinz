@@ -1,0 +1,7 @@
+Package: heinz
+Depends:
+Section: main
+Priority: optional
+Homepage: https://github.com/hephaisto/heinz
+Description: Heinzelmaennekes home automation with web interface
+Maintainer: hephaisto <hephaisto@users.noreply.github.com>
