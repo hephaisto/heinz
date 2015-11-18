@@ -13,7 +13,6 @@ namespace heinz
 class ScalarEndpoint;
 
 using boost::property_tree::ptree;
-namespace bs2=boost::signals2;
 
 /**
 Base class for all endpoints which have scalar (or say: integral) values.

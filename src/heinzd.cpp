@@ -22,7 +22,7 @@ int main(int argc, char** argv)
 		string server_config=heinz->getConfig()->wtConfigFile;
 		BOOST_LOG_TRIVIAL(info)<<"loading config file "<<server_config;
 		server.setServerConfiguration(argc,argv,server_config);
-		server.addEntryPoint(Wt::Application, heinz->getAppCreator());
+		server.addEntryPoint(Wt::Application, heinz->getAppCreator(),"/heinz");
 		if(server.start())
 		{
 			int sig=Wt::WServer::waitForShutdown("heinz");
