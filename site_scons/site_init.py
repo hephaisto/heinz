@@ -15,19 +15,18 @@ def git_tag_version(env):
 			VERSION_PATCH=version_match.group(3),
 			VERSION_HASH="" if version_match.group(5) is None else version_match.group(5)
 		)
-		if CPPDEFINES["VERSION_HASH"] is None:
-			VERSION_STRING='{VERSION_MAJOR}.{VERSION_MINOR}.{VERSION_PATCH}'.format(**CPPDEFINES)
-		else:
-			VERSION_STRING='{VERSION_MAJOR}.{VERSION_MINOR}.{VERSION_PATCH}-{VERSION_HASH}'.format(**CPPDEFINES)
 	# use "custom" if failed
 	else:
 		CPPDEFINES=dict(
-			VERSION_MAJOR="?",
-			VERSION_MINOR="?",
-			VERSION_PATCH="?",
+			VERSION_MAJOR="0",
+			VERSION_MINOR="0",
+			VERSION_PATCH="0",
 			VERSION_HASH="custom"
 		)
-		VERSION_STRING="custom"
+	if CPPDEFINES["VERSION_HASH"] is None:
+		VERSION_STRING='{VERSION_MAJOR}.{VERSION_MINOR}.{VERSION_PATCH}'.format(**CPPDEFINES)
+	else:
+		VERSION_STRING='{VERSION_MAJOR}.{VERSION_MINOR}.{VERSION_PATCH}-{VERSION_HASH}'.format(**CPPDEFINES)
 		
 	env.Append(VERSION_STRING=VERSION_STRING)
 	print("building version: {}".format(env["VERSION_STRING"]))
