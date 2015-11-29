@@ -104,11 +104,13 @@ env.Alias("install",[install_bin,install_systemd_script,install_config,install_c
 
 # package
 env["TARGET_ARCHITECTURE"]="amd64"
-package=packaging.make_debian("heinz",[
+packagename="heinz"
+package=packaging.make_debian(packagename,[
 	(heinzd,"/usr/bin/heinzd"),
 	(config_main,"/etc/heinz/heinz.conf"),
 	(config_http,"/etc/heinz/http.conf"),
-	(config_service,"/lib/systemd/system/heinz.service")
+	(config_service,"/lib/systemd/system/heinz.service"),
+	("../LICENSE","/usr/share/doc/{}/copyright".format(packagename))
 	],env)
 env.Alias("package",package)
 # default
