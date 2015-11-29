@@ -53,7 +53,7 @@ WebApp::WebApp(const Wt::WEnvironment &env, shared_ptr<Config> config)
 	BOOST_FOREACH(auto supergroup, config->groups)
 	{
 		Wt::WTabWidget *subTabs = new Wt::WTabWidget(NULL);
-		Wt::WMenuItem* subMenu=mainTabs->addTab(subTabs,supergroup.first, Wt::WTabWidget::PreLoading);
+		mainTabs->addTab(subTabs,supergroup.first, Wt::WTabWidget::PreLoading);
 		internalPathCallbacks.insert(std::make_pair(
 			"/group/"+supergroup.first,
 			[mainTabs,subTabs]
@@ -65,7 +65,7 @@ WebApp::WebApp(const Wt::WEnvironment &env, shared_ptr<Config> config)
 		BOOST_FOREACH(auto group, supergroup.second)
 		{
 			EndpointListWidget *listWidget=new EndpointListWidget(group.second,NULL);
-			Wt::WMenuItem* subSubMenu=subTabs->addTab(listWidget,group.first, Wt::WTabWidget::PreLoading);
+			subTabs->addTab(listWidget,group.first, Wt::WTabWidget::PreLoading);
 			internalPathCallbacks.insert(std::make_pair(
 				"/group/"+supergroup.first+"/"+group.first,
 				[mainTabs,subTabs,listWidget]

@@ -25,10 +25,8 @@ int main(int argc, char** argv)
 		server.addEntryPoint(Wt::Application, heinz->getAppCreator(),"/heinz");
 		if(server.start())
 		{
-			int sig=Wt::WServer::waitForShutdown("heinz");
+			Wt::WServer::waitForShutdown("heinz");
 			server.stop();
-			//if(sig==Wt::WServer::SIGHUP)
-			//	;	// TODO: reload
 		}
 	}
 	catch(boost::exception &e)

@@ -25,6 +25,7 @@ pythonlib="python"+distutils.sysconfig.get_config_var("VERSION")
 
 
 # flags
+env.Append(CCFLAGS="-Wall")
 env.Append(CCFLAGS="-std=c++11")
 env.Append(CCFLAGS="-DBOOST_ALL_DYN_LINK")
 

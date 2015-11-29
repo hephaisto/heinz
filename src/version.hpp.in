@@ -1,4 +1,4 @@
 #include <string>
 using std::string;
 
-constexpr char* VERSION_STRING=%VERSION_STRING%;
+const char* const VERSION_STRING=%VERSION_STRING%;
