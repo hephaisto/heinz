@@ -30,5 +30,5 @@ def git_tag_version(env):
 		
 	env.Append(VERSION_STRING=VERSION_STRING)
 	print("building version: {}".format(env["VERSION_STRING"]))
-	CPPDEFINES["VERSION_STRING"]='\'"{}"\''.format(VERSION_STRING)
-	env.Append(CPPDEFINES=["{}={}".format(k,v) for k,v in CPPDEFINES.iteritems()])
+	CPPDEFINES["VERSION_STRING"]='"{}"'.format(VERSION_STRING)
+        env.Append(SUBST_DICT={"%{}%".format(k):v for k,v in CPPDEFINES.iteritems()})

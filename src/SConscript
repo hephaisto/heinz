@@ -1,6 +1,6 @@
 import packaging
 
-env=Environment(tools=["default",git_tag_version])
+env=Environment(tools=["default","textfile",git_tag_version])
 conf=Configure(env)
 
 # DEBUGGING
@@ -81,6 +81,9 @@ libs_raspi=[
 if wiringpi:
     sources_daemon+=sources_raspi
     libs+=libs_raspi
+
+# version information
+env.Substfile(target="version.hpp",source="version.hpp.in")
 
 # program
 heinzd=env.Program(target="heinzd",source=sources_daemon,LIBS=libs)

@@ -10,6 +10,7 @@
 #include "MultiplexerEndpoint.hpp"
 #include "exceptions.hpp"
 #include "python/python_wrapper.hpp"
+#include "version.hpp"
 
 namespace heinz
 {
@@ -75,7 +76,7 @@ WebApp::WebApp(const Wt::WEnvironment &env, shared_ptr<Config> config)
 				));
 		}
 	}
-	mainTabs->addTab(new Wt::WTextArea("Settings"),"Settings", Wt::WTabWidget::PreLoading);
+	mainTabs->addTab(new Wt::WTextArea(VERSION_STRING),"Settings", Wt::WTabWidget::PreLoading);
 	mainTabs->setStyleClass("tabwidget");
 
 
