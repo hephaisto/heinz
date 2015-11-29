@@ -1,6 +1,5 @@
 [Unit]
 Description=Heinzelmaennekes home automation
-After=syslog.target
 
 [Service]
 ExecStart=/usr/bin/heinzd
