@@ -1,5 +1,5 @@
 Package: heinz
-Section: main
+Section: misc
 Priority: optional
 Homepage: https://github.com/hephaisto/heinz
 Description: Heinzelmaennekes home automation with web interface
