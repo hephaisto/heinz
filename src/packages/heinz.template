@@ -1,5 +1,4 @@
 Package: heinz
-Depends:
 Section: main
 Priority: optional
 Homepage: https://github.com/hephaisto/heinz
