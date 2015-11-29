@@ -13,16 +13,13 @@ def modify_libname(name):
     return name.replace("_","-")
 
 def build_library_dependencies(target, source, env):
-    print("previous target was: {}".format(target[0]))
     deps=set()
     for s in source:
-        #print(s)
         try:
             this_packages=get_library_dependencies(str(s))
             deps=deps.union(this_packages)
         except: pass
     target[0].write(", ".join(deps))
-    #print(target[0].get_text_contents())
 
 def get_library_dependencies(filename):
     """Returns a list of packages that includes all shared objects included from the given file. Items are formatted for ready use in a "Depends:" field in debian/control files, e.g. they might have version info like (>=1.0.0) attached."""
