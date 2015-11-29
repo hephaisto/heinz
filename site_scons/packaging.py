@@ -32,5 +32,5 @@ def make_debian(packagename, files, env):
 	package_dependencies=[package_folder]+package_files+[controlfile
 			,scons.Glob("{}/DEBIAN/*".format(package_folder))
 			]
-	package_file_node=env.Command(package_file, package_dependencies, "dpkg-deb --build $SOURCE $TARGET".format(package_folder,package_file))
+	package_file_node=env.Command(package_file, package_dependencies, "fakeroot dpkg-deb --build $SOURCE $TARGET".format(package_folder,package_file))
 	return package_file_node
