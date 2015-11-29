@@ -96,7 +96,7 @@ config_service=env.File("../heinz.service")
 
 # install bin
 install_bin=env.Install("/usr/bin",heinzd)
-install_systemd_script=Install("/etc/systemd/system",config_service)
+install_systemd_script=Install("/lib/systemd/system",config_service)
 install_config=InstallAs("/etc/heinz/heinz.conf",config_main)
 install_config2=InstallAs("/etc/heinz/http.conf",config_http)
 
@@ -108,7 +108,7 @@ package=packaging.make_debian("heinz",[
 	(heinzd,"/usr/bin/heinzd"),
 	(config_main,"/etc/heinz/heinz.conf"),
 	(config_http,"/etc/heinz/http.conf"),
-	(config_service,"/etc/systemd/system/heinz.service")
+	(config_service,"/lib/systemd/system/heinz.service")
 	],env)
 env.Alias("package",package)
 # default
