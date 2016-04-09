@@ -6,7 +6,7 @@ from get_library_dependencies import build_library_dependencies
 PACKAGE_TMP_DIR="packages"
 
 def make_debian(packagename, files, env):
-	package_file="{}/{}-{}-{}.deb".format(PACKAGE_TMP_DIR,packagename, env["VERSION_STRING"], env["TARGET_ARCHITECTURE"])
+	package_file="{}/{}-{}-{}.deb".format(PACKAGE_TMP_DIR,packagename, env["VERSION_STRING"], env["TARGET_ARCH"])
 	package_folder=scons.Dir("{}/{}".format(PACKAGE_TMP_DIR,packagename))
 
 	# dirty workaround for http://article.gmane.org/gmane.comp.programming.tools.scons.user/19939

@@ -1,4 +1,5 @@
 import packaging
+import subprocess
 
 env=Environment(tools=["default","textfile",git_tag_version])
 conf=Configure(env)
@@ -104,7 +105,10 @@ install_config2=InstallAs("/etc/heinz/http.conf",config_http)
 env.Alias("install",[install_bin,install_systemd_script,install_config,install_config2])
 
 # package
-env["TARGET_ARCHITECTURE"]="amd64"
+if env["TARGET_ARCH"] is None:
+	prg = subprocess.Popen(["dpkg","--print-architecture"])
+	stdout,stdin=prg.communicate()
+	env["TARGET_ARCH"]=stdout
 packagename="heinz"
 package=packaging.make_debian(packagename,[
 	(heinzd,"/usr/bin/heinzd"),
