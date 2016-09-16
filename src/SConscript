@@ -1,3 +1,5 @@
+import SCons.Conftest
+import SCons.SConf
 import packaging
 import subprocess
 
@@ -32,7 +34,10 @@ else:
 
 
 # SERIAL CAN DUMP
-if conf.CheckLib("serial_can_dump"):
+# the "not" is copied from SConf.py:CheckLib
+# we use Conftest instead of conf because it has the extra_libs options
+if not SCons.Conftest.CheckLib(SCons.SConf.CheckContext(conf), ["serial_can_dump"], language="C++", extra_libs=["boost_system"]):
+	print("found serial_can_dump -> compiling with can support")
 	backend_sources.append("backends/CanSerial.cpp")
 	backend_libs.append("serial_can_dump")
 
