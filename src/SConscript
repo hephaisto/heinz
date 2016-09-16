@@ -18,6 +18,7 @@ if int(debug):
 
 backend_libs = []
 backend_sources = []
+conf=Configure(env)
 
 # RASPBERRY PI
 if conf.CheckCHeader("wiringPi.h"):
