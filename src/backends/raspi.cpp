@@ -1,27 +1,61 @@
 #include <boost/log/trivial.hpp>
 #include <boost/format.hpp>
 
+#ifdef FAKE_WIRINGPI
+bool wiringPiSetup(){return false;}
+void digitalWrite(int, int){}
+int digitalRead(int){return 0;}
+void pinMode(int, int){}
+void pullUpDnControl(int, int){}
+enum {INPUT, OUTPUT, PUD_UP, PUD_DOWN, PUD_OFF, HIGH, LOW};
+#else
 #include <wiringPi.h>
+#endif
 #include "raspi.hpp"
 #include "../exceptions.hpp"
 
 namespace heinz
 {
 
-bool EndpointRaspberry::initialized=false;
+namespace
+{
+	std::unique_ptr<RaspberryPlugin> backendInstance(new RaspberryPlugin);
+	PluginRegistrar<BackendPlugin> registrar("raspi", backendInstance.get());
+}
 
+
+RaspberryPlugin::RaspberryPlugin()
+:initialized(false)
+{
+}
+
+void RaspberryPlugin::backendConfig(ptree &pt)
+{
+	if(wiringPiSetup())
+		throw HeinzException("unable to initialize wiringPi");
+	initialized=true;
+}
+
+shared_ptr<Endpoint> RaspberryPlugin::createEndpoint(shared_ptr<Config> config, ptree &pt)
+{
+	if(!initialized)
+	{
+		throw HeinzException("raspberry plugin not initialized before endpoint definition");
+	}
+	shared_ptr<EndpointRaspberry> tmp(new EndpointRaspberry(pt));
+	if(tmp->getIsInput())
+	{
+		config->pollingObjects.push_back(tmp);
+		tmp->setScriptIfAvailable(pt);
+	}
+	return tmp;
+}
 
 EndpointRaspberry::EndpointRaspberry(ptree &pt)
 :HardwareEndpoint(pt),
 pinNumber(pt.get<int>("pin")),
 invert(pt.get<bool>("invert",false))
 {
-	if(!initialized)
-	{
-		if(wiringPiSetup())
-			throw HeinzException("unable to initialize wiringPi");
-		initialized=true;
-	}
 	string pull_mode_s=pt.get<string>("pull","off");
 	int pull_mode=PUD_OFF;
 	if(pull_mode_s=="off")
@@ -33,9 +67,9 @@ invert(pt.get<bool>("invert",false))
 	else
 		BOOST_THROW_EXCEPTION(ConfigException()<<ExErrorMessage((boost::format("unknown pull mode: %1%")%pull_mode_s).str()));
 
-	if(allocatedPins.find(pinNumber)!=allocatedPins.end())
+	if(backendInstance->allocatedPins.find(pinNumber) != backendInstance->allocatedPins.end())
 		BOOST_THROW_EXCEPTION(ConfigException()<<ExErrorMessage((boost::format("pin %1% already in use")%pinNumber).str()));
-	allocatedPins.insert(pinNumber);
+	backendInstance->allocatedPins.insert(pinNumber);
 
 	pinMode(pinNumber,getIsInput()?INPUT:OUTPUT);
 	if(getIsInput())
@@ -43,7 +77,7 @@ invert(pt.get<bool>("invert",false))
 }
 EndpointRaspberry::~EndpointRaspberry()
 {
-	allocatedPins.erase(pinNumber);
+	backendInstance->allocatedPins.erase(pinNumber);
 }
 
 void EndpointRaspberry::setValue(int64_t value)
@@ -80,16 +114,5 @@ void EndpointRaspberry::postUpdates()
 	triggerUpdates();
 	executeScript();
 }
-shared_ptr<Endpoint> EndpointRaspberry::create(shared_ptr<Config> config, ptree &pt)
-{
-	shared_ptr<EndpointRaspberry> tmp=make_shared<EndpointRaspberry>(pt);
-	if(tmp->getIsInput())
-	{
-		config->pollingObjects.push_back(tmp);
-		tmp->setScriptIfAvailable(pt);
-	}
-	return tmp;
-}
-set<int> EndpointRaspberry::allocatedPins;
 
 }	// namespace

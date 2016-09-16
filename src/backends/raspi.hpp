@@ -4,10 +4,22 @@
 #include <set>
 using std::set;
 
+#include "BackendPlugin.hpp"
 #include "../HardwareEndpoint.hpp"
 
 namespace heinz
 {
+
+class RaspberryPlugin : public BackendPlugin
+{
+public:
+	RaspberryPlugin();
+	virtual void backendConfig(ptree &pt);
+	virtual shared_ptr<Endpoint> createEndpoint(shared_ptr<Config> config, ptree &pt);
+	set<int> allocatedPins;
+private:
+	bool initialized;
+};
 
 class EndpointRaspberry : public HardwareEndpoint, public PollingObject
 {
@@ -22,10 +34,8 @@ public:
 	virtual void postUpdates();
 	static shared_ptr<Endpoint> create(shared_ptr<Config> config, ptree &pt);
 private:
-	static bool initialized;
 	int pinNumber;
 	bool invert;
-	static set<int> allocatedPins;
 };
 
 }
