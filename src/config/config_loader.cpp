@@ -11,46 +11,26 @@
 #include "../constants.hpp"
 #include "../exceptions.hpp"
 
-#include "../FakeEndpoint.hpp"
-#include "../MultiplexerEndpoint.hpp"
-
-#ifdef HAS_WIRINGPI
-#include "../backends/raspi.hpp"
-#endif
+#include "../backends/BackendPlugin.hpp"
 
 namespace heinz
 {
 
+
+template class PluginManager<BackendPlugin>;
+
 namespace bfs=boost::filesystem;
 
-typedef shared_ptr<Endpoint> (*EndpointCreator)(shared_ptr<Config>,ptree &pt);
-map<string,EndpointCreator > endpointCreators={
-	{"fake",&FakeEndpoint::create}
-	#ifdef HAS_WIRINGPI
-	,{"raspi",&EndpointRaspberry::create}
-	#else
-	,{"raspi",(EndpointCreator)NULL}
-	#endif // HAS_WIRINGPI
-	,{"multiplex",&MultiplexerEndpoint::create}
-};
+namespace
+{
+	PluginManager<BackendPlugin> &pm = PluginManager<BackendPlugin>::instance();
+}
 
 
 shared_ptr<Endpoint> createEndpoint(shared_ptr<Config> config, ptree &pt)
 {
-	try
-	{
-		auto creator=endpointCreators.at(pt.data());
-		if(creator)
-		{
-			return creator(config,pt);
-		}
-		else
-			BOOST_THROW_EXCEPTION(ConfigException()<<ExErrorMessage((boost::format("This version has been built without support for endpoints of type %1%") % pt.data()).str()));
-	}
-	catch(std::out_of_range &e)
-	{
-		BOOST_THROW_EXCEPTION(ConfigException()<<ExErrorMessage((boost::format("%1% is not a valid endpoint type") % pt.data()).str()));
-	}
+	BackendPlugin *plugin = pm.get(pt.data());
+	return plugin->createEndpoint(config, pt);
 }
 
 
@@ -84,6 +64,21 @@ shared_ptr<Config> load_config()
 			BOOST_THROW_EXCEPTION(ConfigException()<<ExErrorMessage((boost::format("unable to load config from %2%: %1%") % e.what() % configFile).str()));
 		}
 
+		// PLUGIN CONFIG
+		BOOST_FOREACH( ptree::value_type &v, pt.get_child("endpoint_plugins") )
+		{
+			string name = v.first.data();
+			try
+			{
+				BackendPlugin *plugin = pm.get(pt.data());
+				plugin->backendConfig(pt);
+			}
+			catch(boost::exception &e)
+			{
+				e<<ExEndpointName(name);
+				throw;
+			}
+		}
 
 		// ENDPOINTS
 		BOOST_FOREACH( ptree::value_type &v, pt.get_child("endpoints") )

@@ -97,14 +97,6 @@ EnRangeType ScalarEndpoint::getRange()
 	return rangeType;
 }
 
-//void ScalarEndpoint::webButtonClicked(Wt::WPushButton *btn)
-//{
-//	if(rangeType!=RANGE_U1)
-//		throw InvalidStateDetectedException("button click on non-boolean endpoint");
-//	this->setValue(cachedValue?0:1);
-//	btn->setChecked(cachedValue);
-//}
-
 shared_ptr<ScalarEndpoint> ScalarEndpoint::getSharedScalarEndpoint()
 {
 	shared_ptr<ScalarEndpoint> tmp=std::dynamic_pointer_cast<ScalarEndpoint>(shared_from_this());

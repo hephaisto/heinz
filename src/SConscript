@@ -2,20 +2,34 @@ import packaging
 import subprocess
 
 env=Environment(tools=["default","textfile",git_tag_version])
-conf=Configure(env)
+
+
+# flags
+env.Append(CCFLAGS="-Wall")
+env.Append(CCFLAGS="-std=c++11")
+env.Append(CCFLAGS="-DBOOST_ALL_DYN_LINK")
+
 
 # DEBUGGING
 debug=ARGUMENTS.get("debug",0)
 if int(debug):
 	env.Append(CCFLAGS="-g")
 
+
+backend_libs = []
+backend_sources = []
+
 # RASPBERRY PI
-raspi=ARGUMENTS.get("raspi",0)
 if conf.CheckCHeader("wiringPi.h"):
-	wiringpi=True
-	env.Append(CCFLAGS="-DHAS_WIRINGPI")
+	backend_sources.append("backends/raspi.cpp")
 else:
-	wiringpi=False
+	fake_wiringpi=bool(ARGUMENTS.get("fake_wiringpi",0))
+	if fake_wiringpi:
+		env_fake = env.Clone()
+		env_fake.Append(CCFLAGS="-DFAKE_WIRINGPI")
+		backend_sources.append(env_fake.Object("backends/raspi.cpp"))
+
+
 
 env=conf.Finish()
 
@@ -23,12 +37,6 @@ env=conf.Finish()
 import distutils.sysconfig
 env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])
 pythonlib="python"+distutils.sysconfig.get_config_var("VERSION")
-
-
-# flags
-env.Append(CCFLAGS="-Wall")
-env.Append(CCFLAGS="-std=c++11")
-env.Append(CCFLAGS="-DBOOST_ALL_DYN_LINK")
 
 
 # LIBS
@@ -60,29 +68,22 @@ sources_daemon=[
 "Endpoint.cpp",
 "ScalarEndpoint.cpp",
 "HardwareEndpoint.cpp",
-"FakeEndpoint.cpp",
 "exceptions.cpp",
 "heinzd.cpp",
 "heinz.cpp",
 "EndpointListWidget.cpp",
 "WebApp.cpp",
 "config/config_loader.cpp",
-"MultiplexerEndpoint.cpp"
+"MultiplexerEndpoint.cpp",
+
+"plugin.cpp",
+"backends/FakeBackend.cpp"
 ]
+
 sources_daemon+=sources_widgets
 sources_daemon+=sources_python
-
-
-sources_raspi=[
-"backends/raspi.cpp"
-]
-libs_raspi=[
-"wiringPi"
-]
-
-if wiringpi:
-    sources_daemon+=sources_raspi
-    libs+=libs_raspi
+sources_daemon+=backend_sources
+libs+=backend_libs
 
 # version information
 env.Substfile(target="version.hpp",source="version.hpp.in")

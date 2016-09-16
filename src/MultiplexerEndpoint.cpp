@@ -8,6 +8,18 @@
 namespace heinz
 {
 
+void MultiplexerBackend::backendConfig(ptree &pt)
+{
+	// empty
+}
+
+shared_ptr<Endpoint> MultiplexerBackend::createEndpoint(shared_ptr<Config> config, ptree &pt)
+{
+	shared_ptr<MultiplexerEndpoint> ptr(new MultiplexerEndpoint(pt,config));
+	return ptr;
+}
+
+
 MultiplexerEndpoint::MultiplexerEndpoint(string description, EnRangeType rangeType, vector<shared_ptr<ScalarEndpoint> > endpoints)
 :ScalarEndpoint(description,rangeType,false /* multiplexer endpoints have to be output! */),
 endpoints(endpoints)
@@ -24,12 +36,6 @@ MultiplexerEndpoint::~MultiplexerEndpoint()
 {
 	BOOST_FOREACH(auto p, signalConnections)
 		p.disconnect();
-}
-
-shared_ptr<Endpoint> MultiplexerEndpoint::create(shared_ptr<Config> config, ptree &pt)
-{
-	shared_ptr<MultiplexerEndpoint> ptr(new MultiplexerEndpoint(pt,config));
-	return ptr;
 }
 
 MultiplexerEndpoint::MultiplexerEndpoint(ptree &pt, shared_ptr<Config> config)
@@ -108,4 +114,8 @@ void MultiplexerEndpoint::internalUpdate()
 	triggerUpdates();
 }
 
+namespace
+{
+	PluginRegistrar<BackendPlugin> registrar("multiplexer", new MultiplexerBackend);
+}
 }

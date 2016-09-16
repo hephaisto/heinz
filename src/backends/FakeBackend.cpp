@@ -1,8 +1,25 @@
 #include <boost/log/trivial.hpp>
-#include "FakeEndpoint.hpp"
+#include "FakeBackend.hpp"
 
 namespace heinz
 {
+
+void FakeBackend::backendConfig(ptree &pt)
+{
+	// empty
+}
+
+shared_ptr<Endpoint> FakeBackend::createEndpoint(shared_ptr<Config> config, ptree &pt)
+{
+	shared_ptr<FakeEndpoint> tmp=make_shared<FakeEndpoint>(pt);
+	if(tmp->getIsInput())
+	{
+		shared_ptr<PollingObject> po=tmp;
+		config->pollingObjects.push_back(po);
+		tmp->setScriptIfAvailable(pt);
+	}
+	return tmp;
+}
 
 FakeEndpoint::FakeEndpoint(ptree &pt)
 :HardwareEndpoint(pt)
@@ -47,16 +64,9 @@ void FakeEndpoint::postUpdates()
 	executeScript();
 }
 
-shared_ptr<Endpoint> FakeEndpoint::create(shared_ptr<Config> config, ptree &pt)
+namespace
 {
-	shared_ptr<FakeEndpoint> tmp=make_shared<FakeEndpoint>(pt);
-	if(tmp->getIsInput())
-	{
-		shared_ptr<PollingObject> po=tmp;
-		config->pollingObjects.push_back(po);
-		tmp->setScriptIfAvailable(pt);
-	}
-	return tmp;
+	PluginRegistrar<BackendPlugin> registrar("fake", new FakeBackend);
 }
 
 }

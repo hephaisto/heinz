@@ -3,6 +3,7 @@
 
 #include <boost/thread.hpp>
 #include "Endpoint.hpp"
+#include "ScalarEndpoint.hpp"
 #include "common.hpp"
 #include "config/config_loader.hpp"
 #include "WebApp.hpp"

@@ -43,7 +43,6 @@ public:
 
 	UpdateSignal& getUpdateSignal();
 
-	void webButtonClicked(Wt::WPushButton *btn);
 protected:
 	UpdateSignal updateSignal;
 	int64_t cachedValue;
