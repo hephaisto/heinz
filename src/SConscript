@@ -31,6 +31,10 @@ else:
 		backend_sources.append(env_fake.Object("backends/raspi.cpp"))
 
 
+# SERIAL CAN DUMP
+if conf.CheckLib("serial_can_dump"):
+	backend_sources.append("backends/CanSerial.cpp")
+	backend_libs.append("serial_can_dump")
 
 env=conf.Finish()
 
