@@ -1,7 +1,7 @@
 import packaging
 import subprocess
 
-env=Environment(tools=["default","textfile",git_tag_version])
+env=Environment(tools=["default","textfile",git_tag_version,get_architecture_from_dpkg])
 
 
 # flags
