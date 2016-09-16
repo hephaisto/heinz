@@ -36,6 +36,26 @@ shared_ptr<Endpoint> CanSerialBackend::createEndpoint(shared_ptr<Config> config,
 	return tmp;
 }
 
+
+shared_ptr<SerialCanDumpPort> CanSerialBackend::getPort(const string &name)
+{
+	std::map<string, shared_ptr<SerialCanDumpPort> >::iterator it;
+	if(name == "")
+	{
+		it = ports.begin();
+		if(it == ports.end())
+			BOOST_THROW_EXCEPTION(ConfigException() << ExErrorMessage(("no port defined")));
+	}
+	else
+	{
+		it = ports.find(name);
+		if(it == ports.end())
+			BOOST_THROW_EXCEPTION(ConfigException() << ExErrorMessage(("port not found")));
+	}
+	return it->second;
+}
+
+
 CanSerialEndpoint::CanSerialEndpoint(ptree &pt)
 :HardwareEndpoint(pt),
 port(backendInstance->getPort(pt.get<string>("port", ""))),
@@ -146,6 +166,24 @@ bool CanSerialEndpoint::isValid()
 	return hasState;
 }
 
+EnCanPollingMode CanSerialEndpoint::getPollingMode()
+{
+	return pollingMode;
+}
+
+std::map<string, std::map<uint32_t, CanEndpointMessageHandler> >& CanSerialBackend::getMessageLinks()
+{
+	return messageLinks;
+}
+
+int64_t CanSerialEndpoint::getValue()
+{
+	if(pollingMode == EnCanPollingMode::ondemand)
+		throw HeinzException("reading ondemand endpoints is not supported yet");
+	boost::shared_lock<ScalarEndpoint> guard(*this);
+	return cachedValue;
+}
+
 bool CanSerialEndpoint::updatesAvailable()
 {
 	if(pollingMode == EnCanPollingMode::always)
@@ -165,6 +203,13 @@ const std::map<string, EnCanMessageType> configCanMessageNames
 	{"set", EnCanMessageType::set},
 	//{"modify", EnCanMessageType::modify},
 	{"update", EnCanMessageType::update}
+};
+
+const std::map<string, EnCanPollingMode> configCanPollingModes
+{
+	{"never", EnCanPollingMode::never},
+	{"ondemand", EnCanPollingMode::ondemand},
+	{"always", EnCanPollingMode::always}
 };
 
 }

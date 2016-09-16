@@ -8,6 +8,7 @@
 #include "BackendPlugin.hpp"
 
 /// CURRENT STATE OF IMPLEMENTATION
+// missing: ondemand reading
 
 namespace heinz
 {
