@@ -5,7 +5,6 @@
 using std::map;
 #include <Wt/WApplication>
 #include "common.hpp"
-#include "FakeEndpoint.hpp"
 #include "config/config_loader.hpp"
 
 namespace heinz
