@@ -70,8 +70,8 @@ shared_ptr<Config> load_config()
 			string name = v.first.data();
 			try
 			{
-				BackendPlugin *plugin = pm.get(pt.data());
-				plugin->backendConfig(pt);
+				BackendPlugin *plugin = pm.get(name);
+				plugin->backendConfig(v.second);
 			}
 			catch(boost::exception &e)
 			{
