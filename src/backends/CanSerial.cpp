@@ -1,3 +1,5 @@
+#include <iostream>
+#include <functional>
 #include <boost/log/trivial.hpp>
 #include <boost/foreach.hpp>
 #include <boost/thread.hpp>
@@ -13,15 +15,26 @@ namespace
 	PluginRegistrar<BackendPlugin> registrar("can", backendInstance.get());
 }
 
+CanSerialBackend::CanSerialBackend()
+:io(),
+thread(boost::bind(&boost::asio::io_service::run, &io)),
+work(io)
+{}
+
 void CanSerialBackend::backendConfig(ptree &pt)
 {
 	BOOST_FOREACH( ptree::value_type &v, pt.get_child("buses") )
 	{
 		string name = v.first.data();
+		BOOST_LOG_TRIVIAL(info) << "initializing CAN bus '" << name <<"'";
 		shared_ptr<SerialCanDumpPort> port(new SerialCanDumpPort(io, v.second.get<string>("serial_port"), v.second.get<unsigned int>("baud_rate")));
+		port->onReceive().connect([name, this](shared_ptr<const ExtendedCanFrame> frame)
+		{
+			handleCanMessage(name, frame);
+		});
+		messageLinks[name]; // initialize with empty map
 		ports.insert(std::make_pair(name, port));
 	}
-	boost::thread t(boost::bind(&boost::asio::io_service::run, &io));
 }
 
 shared_ptr<Endpoint> CanSerialBackend::createEndpoint(shared_ptr<Config> config, ptree &pt)
@@ -36,24 +49,36 @@ shared_ptr<Endpoint> CanSerialBackend::createEndpoint(shared_ptr<Config> config,
 	return tmp;
 }
 
+void CanSerialBackend::handleCanMessage(const string port, shared_ptr<const ExtendedCanFrame> frame)
+{
+	auto portAssignment = getMessageLinks(port);
+	auto handlerIt = portAssignment.find(frame->id);
+	if(handlerIt == portAssignment.end())
+		std::cout << "CAN frame received with UNKNOWN identifier: " << frame->id;
+	else
+	{
+		std::cout << "CAN frame received with identifier: " << frame->id;
+		handlerIt->second(frame);
+	}
+}
 
 shared_ptr<SerialCanDumpPort> CanSerialBackend::getPort(const string &name)
 {
-	std::map<string, shared_ptr<SerialCanDumpPort> >::iterator it;
-	if(name == "")
-	{
-		it = ports.begin();
-		if(it == ports.end())
-			BOOST_THROW_EXCEPTION(ConfigException() << ExErrorMessage(("no port defined")));
-	}
-	else
-	{
-		it = ports.find(name);
-		if(it == ports.end())
-			BOOST_THROW_EXCEPTION(ConfigException() << ExErrorMessage(("port not found")));
-	}
+	auto it = ports.find(name);
+	if(it == ports.end())
+		BOOST_THROW_EXCEPTION(ConfigException() << ExErrorMessage(("port '" +name+ "' not found")));
 	return it->second;
 }
+
+std::map<uint32_t, CanEndpointMessageHandler>& CanSerialBackend::getMessageLinks(const string& name)
+{
+	std::map<string, std::map<uint32_t, CanEndpointMessageHandler> >::iterator it = messageLinks.find(name);
+	if(it == messageLinks.end())
+		BOOST_THROW_EXCEPTION(ConfigException() << ExErrorMessage(("port '" +name+ "' not found")));
+	return it->second;
+
+}
+
 
 
 CanSerialEndpoint::CanSerialEndpoint(ptree &pt)
@@ -85,7 +110,7 @@ hasState(pt.get<bool>("has_state"))
 			break;
 			case EnCanMessageType::update:
 			{
-				backendInstance->getMessageLinks()[pt.get<string>("port")].insert(std::make_pair(can_id, boost::bind(&CanSerialEndpoint::handleBusUpdate, this, boost::placeholders::_1)));
+				backendInstance->getMessageLinks(pt.get<string>("port", "")).insert(std::make_pair(can_id, std::bind(&CanSerialEndpoint::handleBusUpdate, this, std::placeholders::_1)));
 			}
 			break;
 			default:
@@ -94,40 +119,42 @@ hasState(pt.get<bool>("has_state"))
 	}
 }
 
-void CanSerialEndpoint::handleBusUpdate(shared_ptr<ExtendedCanFrame> frame)
+void CanSerialEndpoint::handleBusUpdate(shared_ptr<const ExtendedCanFrame> frame)
 {
-	boost::unique_lock<CanSerialEndpoint> guard(*this);
-	if(hasState)
 	{
-		switch(rangeType)
+		boost::unique_lock<CanSerialEndpoint> guard(*this);
+		if(hasState)
 		{
-			case RANGE_U1:
-				this->cachedValue = frame->getData_uint8();
-			break;
-			case RANGE_U8:
-				this->cachedValue = frame->getData_uint8();
-			break;
-			case RANGE_U16:
-				this->cachedValue = frame->getData_uint16();
-			break;
-			default:
-				;// TODO
+			switch(rangeType)
+			{
+				case RANGE_U1:
+					this->cachedValue = frame->getData_uint8();
+				break;
+				case RANGE_U8:
+					this->cachedValue = frame->getData_uint8();
+				break;
+				case RANGE_U16:
+					this->cachedValue = frame->getData_uint16();
+				break;
+				default:
+					;// TODO
+			}
 		}
-	}
-	else // no state, only relative changes
-	{
-		switch(rangeType)
+		else // no state, only relative changes
 		{
-			case RANGE_U1:
-			break;
-			case RANGE_U8:
-				this->cachedValue = frame->getData_int8();
-			break;
-			case RANGE_U16:
-				this->cachedValue = frame->getData_int16();
-			break;
-			default:
-				;// TODO
+			switch(rangeType)
+			{
+				case RANGE_U1:
+				break;
+				case RANGE_U8:
+					this->cachedValue = frame->getData_int8();
+				break;
+				case RANGE_U16:
+					this->cachedValue = frame->getData_int16();
+				break;
+				default:
+					;// TODO
+			}
 		}
 	}
 	postUpdates();
@@ -169,11 +196,6 @@ bool CanSerialEndpoint::isValid()
 EnCanPollingMode CanSerialEndpoint::getPollingMode()
 {
 	return pollingMode;
-}
-
-std::map<string, std::map<uint32_t, CanEndpointMessageHandler> >& CanSerialBackend::getMessageLinks()
-{
-	return messageLinks;
 }
 
 int64_t CanSerialEndpoint::getValue()

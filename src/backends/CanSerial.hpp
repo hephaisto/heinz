@@ -13,18 +13,22 @@
 namespace heinz
 {
 
-typedef boost::function<void (shared_ptr<ExtendedCanFrame>)> CanEndpointMessageHandler;
+typedef std::function<void (shared_ptr<const ExtendedCanFrame>)> CanEndpointMessageHandler;
 
 class CanSerialBackend : public BackendPlugin
 {
 public:
+	CanSerialBackend();
 	virtual void backendConfig(ptree &pt);
 	virtual shared_ptr<Endpoint> createEndpoint(shared_ptr<Config> config, ptree &pt);
 	shared_ptr<SerialCanDumpPort> getPort(const string &name);
-	std::map<string, std::map<uint32_t, CanEndpointMessageHandler> >& getMessageLinks();
+	std::map<uint32_t, CanEndpointMessageHandler>& getMessageLinks(const string &port);
 private:
 	boost::asio::io_service io;
+	boost::thread thread;
+	boost::asio::io_service::work work;
 	std::map<string, shared_ptr<SerialCanDumpPort> > ports;
+	void handleCanMessage(const string port, shared_ptr<const ExtendedCanFrame> frame);
 	std::map<string, std::map<uint32_t, CanEndpointMessageHandler> > messageLinks;
 };
 
@@ -61,7 +65,7 @@ public:
 	virtual void postUpdates();
 
 	static shared_ptr<Endpoint> create(shared_ptr<Config> config, ptree &pt);
-	void handleBusUpdate(shared_ptr<ExtendedCanFrame> frame);
+	void handleBusUpdate(shared_ptr<const ExtendedCanFrame> frame);
 
 	EnCanPollingMode getPollingMode();
 private:
